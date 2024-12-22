@@ -9,7 +9,7 @@
         "dev": "ts-node src/index.ts",
         "format": "prettier --write \"src/**/*.{ts,tsx}\"",
         "start": "node dist/index.js",
-        "addCommands": "ts-node src/commands.ts"
+        "addCommands": "ts-node src/addCommands.service.ts"
     },
     "keywords": [],
     "author": "",
