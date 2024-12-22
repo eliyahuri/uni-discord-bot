@@ -1,6 +1,7 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import config from "./config/config";
-
+import { setTimeout } from "node:timers/promises";
+import { commands } from "./commands";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.on(Events.ClientReady, (readyClient) => {
@@ -12,16 +13,25 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.commandName === "ping") {
         await interaction.reply("Pong!");
+        setTimeout(3000, async () => await interaction.deleteReply());
     }
+
     if (interaction.commandName === "representatives") {
         await interaction.reply(
             "יגל גרוס: 0515204882 \n אליהו חורי: 0584304307",
         );
     }
+
     if (interaction.commandName === "help") {
         await interaction.reply(
-            "הפקודות הן: \n 1. ping \n 2. representatives \n 3. help",
+            commands
+                .map((command) => `/${command.name} - ${command.description}`)
+                .join("\n"),
         );
+    }
+
+    if (interaction.commandName === "pizza") {
+        await interaction.reply("@here בואו לפיצה הדיקן בשעה 20:00");
     }
 });
 
