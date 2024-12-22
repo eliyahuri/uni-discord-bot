@@ -1,0 +1,12 @@
+{
+    "include": ["src/**/*.ts"],
+    "compilerOptions": {
+        "outDir": "./dist",
+        "skipLibCheck": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "module": "CommonJS",
+        "forceConsistentCasingInFileNames": true,
+        "target": "ESNext"
+    }
+}

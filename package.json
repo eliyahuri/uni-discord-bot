@@ -1,0 +1,35 @@
+{
+    "name": "DiscordBot",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "lint": "eslint \"src/**/*.{ts,tsx}\"",
+        "build": "tsc",
+        "dev": "ts-node src/index.ts",
+        "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+        "start": "node dist/index.js",
+        "addCommands": "ts-node src/commands.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@eslint/eslintrc": "^3.2.0",
+        "@types/node": "^22.10.2",
+        "@typescript-eslint/eslint-plugin": "^8.18.1",
+        "@typescript-eslint/parser": "^8.18.1",
+        "eslint": "^9.17.0",
+        "eslint-config-airbnb-typescript": "^18.0.0",
+        "eslint-import-resolver-typescript": "^3.7.0",
+        "eslint-plugin-import": "^2.31.0",
+        "prettier": "^3.4.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.2"
+    },
+    "dependencies": {
+        "discord.js": "^14.16.3",
+        "dotenv": "^16.4.7",
+        "env-var": "^7.5.0"
+    }
+}
