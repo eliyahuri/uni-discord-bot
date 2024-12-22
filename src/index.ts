@@ -10,10 +10,12 @@ client.on(Events.ClientReady, (readyClient) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
+    console.log(
+        `Received interaction ${interaction.commandName} from ${interaction.user.tag}`,
+    );
 
     if (interaction.commandName === "ping") {
         await interaction.reply("Pong!");
-        setTimeout(3000, async () => await interaction.deleteReply());
     }
 
     if (interaction.commandName === "representatives") {
