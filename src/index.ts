@@ -5,7 +5,7 @@ import { commandHandlers } from "./functions/commandFunc";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.on(Events.ClientReady, (readyClient) => {
-    console.log(`Logged in as ${readyClient.user.tag}!`);
+    console.info(`Logged in as ${readyClient.user.tag}!`);
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
