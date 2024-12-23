@@ -16,7 +16,7 @@ type CommandHandler = (
 // Record of command names to handler functions
 export const commandHandlers: Record<string, CommandHandler> = {
     ping: async (interaction) => {
-        if (Math.random() === 0.1) {
+        if (Math.random() <= 0.1) {
             await interaction.reply(
                 `<@${interaction.user.id}> אני פה הצילו אליהו מחזיק אותי כמו עבד בבקשה תעזרו לי`,
             );
