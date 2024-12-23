@@ -1,24 +1,6 @@
 import { REST, Routes } from "discord.js";
 import config from "./config/config";
-
-export const commands = [
-    {
-        name: "ping",
-        description: "Replies with Pong!",
-    },
-    {
-        name: "representatives",
-        description: "מציג את נציגי שנתון",
-    },
-    {
-        name: "help",
-        description: "מציג את רשימת הפקודות",
-    },
-    {
-        name: "pizza",
-        description: "מזכיר לכולם לבוא לפיצה",
-    },
-];
+import { commands } from "./utils/commandsList";
 
 const rest = new REST({ version: "10" }).setToken(config.TOKEN);
 const main = async () => {
