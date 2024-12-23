@@ -27,4 +27,4 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 });
 
-void client.login(config.TOKEN);
+client.login(config.TOKEN);
