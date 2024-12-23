@@ -13,7 +13,7 @@ const main = async () => {
 
         console.info("Successfully reloaded application (/) commands.");
     } catch (error: any) {
-        console.error(error["requestBody"]["json"]);
+        console.error(error.message);
     }
 };
 
