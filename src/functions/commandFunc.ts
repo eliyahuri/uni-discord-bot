@@ -52,5 +52,3 @@ export const commandHandlers: Record<string, CommandHandler> = {
         await interaction.reply(`You selected ${option}`);
     },
 };
-
-console.log("pizza");
