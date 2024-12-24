@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { commands } from "../utils/commandsList";
+import { parseTimeToMilliseconds } from "./convertTime";
 
 // Optional: define the shape of a command in `commands`
 interface MyCommand {
@@ -50,5 +51,32 @@ export const commandHandlers: Record<string, CommandHandler> = {
     summary: async (interaction) => {
         const option = interaction.options.getString("option");
         await interaction.reply(`You selected ${option}`);
+    },
+
+    alert: async (interaction) => {
+        const time = interaction.options.getString("time");
+        if (!time) {
+            await interaction.reply("לא נמצא זמן");
+            return;
+        }
+
+        const msTime = parseTimeToMilliseconds(time);
+        if (!msTime) {
+            await interaction.reply("זמן לא תקין");
+            return;
+        }
+
+        const targetDate = new Date(Date.now() + msTime);
+        const hours = targetDate.getHours().toString().padStart(2, "0");
+        const minutes = targetDate.getMinutes().toString().padStart(2, "0");
+
+        const formattedTime = `${hours}:${minutes}`;
+        const message = `נקבעה התראה לבעוד ${time} עד ל${formattedTime}`;
+
+        await interaction.reply(message);
+
+        setTimeout(async () => {
+            await interaction.followUp(`<@${interaction.user.id}> התראה!`);
+        }, msTime);
     },
 };

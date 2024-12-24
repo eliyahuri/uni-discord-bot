@@ -54,4 +54,17 @@ export const commands = [
             },
         ],
     },
+    {
+        name: "alert",
+        description: "מציג התראה",
+        options: [
+            // the time it will take to send the alert. getting the time as a string that can be either an hour (HH:MM) or 15m for 15 minutes or 1h for 1 hour
+            {
+                type: 3,
+                name: "time",
+                description: "זמן של התראה",
+                required: true,
+            },
+        ],
+    },
 ];
