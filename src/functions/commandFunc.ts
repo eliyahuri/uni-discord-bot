@@ -55,6 +55,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
     alert: async (interaction) => {
         const time = interaction.options.getString("time");
+        const message = interaction.options.getString("message");
         if (!time) {
             await interaction.reply("לא נמצא זמן");
             return;
@@ -71,12 +72,15 @@ export const commandHandlers: Record<string, CommandHandler> = {
         const minutes = targetDate.getMinutes().toString().padStart(2, "0");
 
         const formattedTime = `${hours}:${minutes}`;
-        const message = `נקבעה התראה לבעוד ${time} עד ל${formattedTime}`;
 
-        await interaction.reply(message);
+        await interaction.reply(
+            `נקבעה התראה לבעוד ${time} עד ל${formattedTime} עם ההודעה: ${message}`,
+        );
 
         setTimeout(async () => {
-            await interaction.followUp(`<@${interaction.user.id}> התראה!`);
+            await interaction.followUp(
+                `<@${interaction.user.id}> התראה! ${message}`,
+            );
         }, msTime);
     },
 };

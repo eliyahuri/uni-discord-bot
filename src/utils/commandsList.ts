@@ -65,6 +65,12 @@ export const commands = [
                 description: "זמן של התראה",
                 required: true,
             },
+            {
+                type: 3,
+                name: "message",
+                description: "הודעה שתוצג בהתראה",
+                required: true,
+            },
         ],
     },
 ];
