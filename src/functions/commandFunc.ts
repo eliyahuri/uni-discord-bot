@@ -2,19 +2,15 @@ import { ChatInputCommandInteraction } from "discord.js";
 import { commands } from "../utils/commandsList";
 import { parseTimeToMilliseconds } from "./convertTime";
 
-// Optional: define the shape of a command in `commands`
 interface MyCommand {
     name: string;
     description: string;
-    // add fields as needed
 }
 
-// Type alias for a command handler function
 type CommandHandler = (
     interaction: ChatInputCommandInteraction,
 ) => Promise<void>;
 
-// Record of command names to handler functions
 export const commandHandlers: Record<string, CommandHandler> = {
     ping: async (interaction) => {
         if (Math.random() <= 0.1) {

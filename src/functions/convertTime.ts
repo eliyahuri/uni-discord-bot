@@ -14,7 +14,7 @@ export function parseTimeToMilliseconds(input: string): number | null {
 
     // Process each part
     for (const part of parts) {
-        let match;
+        let match: RegExpExecArray | null;
 
         // Match days
         match = daysRegex.exec(part);
