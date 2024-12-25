@@ -73,4 +73,16 @@ export const commands = [
             },
         ],
     },
+    {
+        name: "ticket",
+        description: "פותח צ'אט עם נציגי שנתון",
+        options: [
+            {
+                type: 3,
+                name: "message",
+                description: "הודעה שתישלח לנציגי שנתון",
+                required: true,
+            },
+        ],
+    },
 ];

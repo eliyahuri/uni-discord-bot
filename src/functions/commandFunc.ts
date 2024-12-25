@@ -1,4 +1,5 @@
 import { ChatInputCommandInteraction } from "discord.js";
+import { client } from "../config/client";
 import { commands } from "../utils/commandsList";
 import { parseTimeToMilliseconds } from "./convertTime";
 
@@ -82,5 +83,15 @@ export const commandHandlers: Record<string, CommandHandler> = {
                 `<@${interaction.user.id}> \u05d4\u05ea\u05e8\u05d0\u05d4! ${message}`,
             );
         }, msTime);
+    },
+    ticket: async (interaction) => {
+        const message = interaction.options.getString("message");
+        if (!message) {
+            await interaction.reply("please provide a message");
+            return;
+        }
+        client.users.send("173926117172838401", message);
+        client.users.send("762268300746686474", message);
+        await interaction.reply({ content: "ticket sent", ephemeral: true });
     },
 };

@@ -1,8 +1,7 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
+import { Events } from "discord.js";
+import { client } from "./config/client";
 import config from "./config/config";
 import { commandHandlers } from "./functions/commandFunc";
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.on(Events.ClientReady, (readyClient) => {
     console.info(`Logged in as ${readyClient.user.tag}!`);
