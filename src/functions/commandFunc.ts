@@ -57,13 +57,17 @@ export const commandHandlers: Record<string, CommandHandler> = {
         const time = interaction.options.getString("time");
         const message = interaction.options.getString("message");
         if (!time) {
-            await interaction.reply("לא נמצא זמן");
+            await interaction.reply(
+                "\u05dc\u05d0 \u05e0\u05de\u05e6\u05d0 \u05d6\u05de\u05df",
+            );
             return;
         }
 
         const msTime = parseTimeToMilliseconds(time);
         if (!msTime) {
-            await interaction.reply("זמן לא תקין");
+            await interaction.reply(
+                "\u05d6\u05de\u05df \u05dc\u05d0 \u05ea\u05e7\u05d9\u05df",
+            );
             return;
         }
 
@@ -74,12 +78,12 @@ export const commandHandlers: Record<string, CommandHandler> = {
         const formattedTime = `${hours}:${minutes}`;
 
         await interaction.reply(
-            `נקבעה התראה לבעוד ${time} עד ל${formattedTime} עם ההודעה: ${message}`,
+            `\u05e0\u05e7\u05d1\u05e2\u05d4 \u05d4\u05ea\u05e8\u05d0\u05d4 \u05dc\u05d1\u05e2\u05d5\u05d3 ${time} \u05e2\u05d3 \u05dc${formattedTime} \u05e2\u05dd \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4: ${message}`,
         );
 
         setTimeout(async () => {
             await interaction.followUp(
-                `<@${interaction.user.id}> התראה! ${message}`,
+                `<@${interaction.user.id}> \u05d4\u05ea\u05e8\u05d0\u05d4! ${message}`,
             );
         }, msTime);
     },
