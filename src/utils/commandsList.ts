@@ -85,4 +85,34 @@ export const commands = [
             },
         ],
     },
+    {
+        name: "poll",
+        description: "פותח סקר",
+        options: [
+            {
+                type: 3,
+                name: "question",
+                description: "שאלה לסקר",
+                required: true,
+            },
+            {
+                type: 3,
+                name: "answers",
+                description: "תשובות לסקר, מופרדות בפסיק",
+                required: true,
+            },
+            {
+                type: 10,
+                name: "time",
+                description: "זמן של הסקר",
+                required: false,
+            },
+            {
+                type: 5,
+                name: "multiselect",
+                description: "האם ניתן לבחור יותר מתשובה אחת",
+                required: false,
+            },
+        ],
+    },
 ];
