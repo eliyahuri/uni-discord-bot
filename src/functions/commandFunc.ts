@@ -90,7 +90,8 @@ export const commandHandlers: Record<string, CommandHandler> = {
             await interaction.reply("please provide a message");
             return;
         }
-        client.users.send("173926117172838401", message);
+        const sentMessage = `ticket sent:\nfrom: <@${interaction.user.id}>\n it says: ${message}`;
+        client.users.send("173926117172838401", sentMessage);
         client.users.send("762268300746686474", message);
         await interaction.reply({ content: "ticket sent", ephemeral: true });
     },
