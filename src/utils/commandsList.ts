@@ -115,8 +115,8 @@ export const commands = [
             },
         ],
     },
-    {
-        name: "voice",
-        description: "נכנס לחדר קולי",
-    },
+    // {
+    //     name: "voice",
+    //     description: "נכנס לחדר קולי",
+    // },
 ];

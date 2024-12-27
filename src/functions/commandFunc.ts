@@ -153,17 +153,17 @@ export const commandHandlers: Record<string, CommandHandler> = {
             interaction.reply("error");
         }
     },
-    voice: async (interaction) => {
-        const member = interaction.member as GuildMember;
-        if (!member.voice.channel) {
-            await interaction.reply("you are not in a voice channel");
-            return;
-        }
-        joinVoiceChannel({
-            channelId: member.voice.channel.id,
-            guildId: member.voice.channel.guild.id,
-            adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
-        });
-        await interaction.reply("joined voice channel");
-    },
+    // voice: async (interaction) => {
+    //     const member = interaction.member as GuildMember;
+    //     if (!member.voice.channel) {
+    //         await interaction.reply("you are not in a voice channel");
+    //         return;
+    //     }
+    //     joinVoiceChannel({
+    //         channelId: member.voice.channel.id,
+    //         guildId: member.voice.channel.guild.id,
+    //         adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
+    //     });
+    //     await interaction.reply("joined voice channel");
+    // },
 };
