@@ -1,7 +1,8 @@
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, type GuildMember } from "discord.js";
 import { client } from "../config/client";
 import { commands } from "../utils/commandsList";
 import { parseTimeToMilliseconds } from "./convertTime";
+import { joinVoiceChannel } from "@discordjs/voice";
 
 interface MyCommand {
     name: string;
@@ -151,5 +152,18 @@ export const commandHandlers: Record<string, CommandHandler> = {
         } catch (e) {
             interaction.reply("error");
         }
+    },
+    voice: async (interaction) => {
+        const member = interaction.member as GuildMember;
+        if (!member.voice.channel) {
+            await interaction.reply("you are not in a voice channel");
+            return;
+        }
+        joinVoiceChannel({
+            channelId: member.voice.channel.id,
+            guildId: member.voice.channel.guild.id,
+            adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
+        });
+        await interaction.reply("joined voice channel");
     },
 };
