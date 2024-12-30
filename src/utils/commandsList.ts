@@ -28,27 +28,27 @@ export const commands = [
                 choices: [
                     {
                         name: "אינפי 1",
-                        value: "option1",
+                        value: "infi1",
                     },
                     {
                         name: "לוגיקה",
-                        value: "option2",
+                        value: "logics",
                     },
                     {
                         name: "ליניארית 1",
-                        value: "option3",
+                        value: "linear1",
                     },
                     {
                         name: "חישוב",
-                        value: "option4",
+                        value: "programming",
                     },
                     {
                         name: "ספרתיות",
-                        value: "option5",
+                        value: "binearyAlgebra",
                     },
                     {
                         name: "מדעי הנתונים",
-                        value: "option6",
+                        value: "dataScience",
                     },
                 ],
             },

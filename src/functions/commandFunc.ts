@@ -3,7 +3,8 @@ import { client } from "../config/client";
 import { commands } from "../utils/commandsList";
 import { parseTimeToMilliseconds } from "./convertTime";
 import { joinVoiceChannel } from "@discordjs/voice";
-
+import fs from "fs";
+import path from "path";
 interface MyCommand {
     name: string;
     description: string;
@@ -65,13 +66,59 @@ export const commandHandlers: Record<string, CommandHandler> = {
         }
     },
 
-    summary: async (interaction) => {
+    summary: async (interaction: ChatInputCommandInteraction) => {
         try {
+            // Defer right away so Discord doesn't invalidate the interaction after 3 seconds
+            await interaction.deferReply();
+
             const option = interaction.options.getString("option");
-            await interaction.reply(`You selected ${option}`);
+            if (!option) {
+                // You have already deferred, so we edit the reply instead of calling "reply" again
+                await interaction.editReply(
+                    "Please provide a folder name for the summary.",
+                );
+                return;
+            }
+
+            // Construct the folder path (adjust as needed for your structure)
+            const summaryPath = path.join(__dirname, "..", "assets", option);
+
+            if (!fs.existsSync(summaryPath)) {
+                await interaction.editReply(
+                    `Could not find a folder named "${option}".`,
+                );
+                return;
+            }
+
+            const filesInDirectory = fs.readdirSync(summaryPath);
+
+            if (filesInDirectory.length === 0) {
+                await interaction.editReply(
+                    `No files found in "${option}" folder.`,
+                );
+                return;
+            }
+
+            // Map filenames to full paths
+            const files = filesInDirectory.map((fileName) =>
+                path.join(summaryPath, fileName),
+            );
+
+            // Now edit the deferred reply with the attachments
+            await interaction.editReply({
+                content: `Here are the files from "${option}":`,
+                files,
+            });
         } catch (error) {
             console.error("Error in summary command:", error);
-            interaction.reply("An error occurred while executing the command.");
+
+            // If an error happens, check if we've already replied.
+            // If not, we can do one last editReply.
+            if (!interaction.replied) {
+                await interaction.editReply(
+                    "An error occurred while executing the command.",
+                );
+            }
         }
     },
 
