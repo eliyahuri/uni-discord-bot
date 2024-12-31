@@ -44,7 +44,7 @@ export const commands = [
                     },
                     {
                         name: "ספרתיות",
-                        value: "binearyAlgebra",
+                        value: "booleanAlgebra",
                     },
                     {
                         name: "מדעי הנתונים",
