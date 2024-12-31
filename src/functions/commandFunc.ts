@@ -3,8 +3,9 @@ import fs from "fs";
 import path from "path";
 import { client } from "../config/client";
 import { commands } from "../utils/commandsList";
-import { parseTimeToMilliseconds } from "./convertTime";
 import subjectTranslations from "../utils/translations";
+import { parseTimeToMilliseconds } from "./convertTime";
+
 interface MyCommand {
     name: string;
     description: string;
