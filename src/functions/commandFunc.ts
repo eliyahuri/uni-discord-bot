@@ -1,10 +1,10 @@
-import { ChatInputCommandInteraction, type GuildMember } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
+import fs from "fs";
+import path from "path";
 import { client } from "../config/client";
 import { commands } from "../utils/commandsList";
 import { parseTimeToMilliseconds } from "./convertTime";
-import { joinVoiceChannel } from "@discordjs/voice";
-import fs from "fs";
-import path from "path";
+import subjectTranslations from "../utils/translations";
 interface MyCommand {
     name: string;
     description: string;
@@ -85,7 +85,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
             if (!fs.existsSync(summaryPath)) {
                 await interaction.editReply(
-                    `Could not find a folder named "${option}".`,
+                    `לא נמצאה תיקייה בשם "${subjectTranslations[option] ? subjectTranslations[option] : option}".`,
                 );
                 return;
             }
@@ -106,7 +106,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
             // Now edit the deferred reply with the attachments
             await interaction.editReply({
-                content: `Here are the files from "${option}":`,
+                content: `הנה סיכומים מ "${subjectTranslations[option] ? subjectTranslations[option] : option}":`,
                 files,
             });
         } catch (error) {
