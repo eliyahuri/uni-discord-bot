@@ -67,7 +67,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
         }
     },
 
-    summary: async (interaction: ChatInputCommandInteraction) => {
+    summary: async (interaction) => {
         try {
             // Defer right away so Discord doesn't invalidate the interaction after 3 seconds
             await interaction.deferReply();
