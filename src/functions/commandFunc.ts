@@ -30,7 +30,9 @@ export const commandHandlers: Record<string, CommandHandler> = {
             }
         } catch (error) {
             console.error("Error in ping command:", error);
-            interaction.reply("An error occurred while executing the command.");
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
         }
     },
 
@@ -41,7 +43,9 @@ export const commandHandlers: Record<string, CommandHandler> = {
             );
         } catch (error) {
             console.error("Error in representatives command:", error);
-            interaction.reply("An error occurred while executing the command.");
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
         }
     },
 
@@ -54,7 +58,9 @@ export const commandHandlers: Record<string, CommandHandler> = {
             );
         } catch (error) {
             console.error("Error in help command:", error);
-            interaction.reply("An error occurred while executing the command.");
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
         }
     },
 
@@ -63,7 +69,9 @@ export const commandHandlers: Record<string, CommandHandler> = {
             await interaction.reply("@here בואו לפיצה הדיקן בשעה 20:00");
         } catch (error) {
             console.error("Error in pizza command:", error);
-            interaction.reply("An error occurred while executing the command.");
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
         }
     },
 
@@ -159,7 +167,9 @@ export const commandHandlers: Record<string, CommandHandler> = {
             }, msTime);
         } catch (error) {
             console.error("Error in alert command:", error);
-            interaction.reply("An error occurred while executing the command.");
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
         }
     },
     ticket: async (interaction) => {
@@ -198,8 +208,13 @@ export const commandHandlers: Record<string, CommandHandler> = {
                 },
             });
         } catch (e) {
-            interaction.reply("error");
+            await interaction.reply("error");
         }
+    },
+    tal: async (interaction) => {
+        await interaction.reply(
+            "<@1317796479511035956> טלללללללללללללללללללללל",
+        );
     },
     // voice: async (interaction) => {
     //     const member = interaction.member as GuildMember;
