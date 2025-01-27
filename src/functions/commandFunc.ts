@@ -1,10 +1,11 @@
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, type GuildMember } from "discord.js";
 import fs from "fs";
 import path from "path";
 import { client } from "../config/client";
 import { commands } from "../utils/commandsList";
 import subjectTranslations from "../utils/translations";
 import { parseTimeToMilliseconds } from "./convertTime";
+import { joinVoiceChannel } from "@discordjs/voice";
 
 interface MyCommand {
     name: string;
@@ -155,11 +156,10 @@ export const commandHandlers: Record<string, CommandHandler> = {
             const minutes = targetDate.getMinutes().toString().padStart(2, "0");
 
             const formattedTime = `${hours}:${minutes}`;
-
-            await interaction.reply(
-                `\u05e0\u05e7\u05d1\u05e2\u05d4 \u05d4\u05ea\u05e8\u05d0\u05d4 \u05dc\u05d1\u05e2\u05d5\u05d3 ${time} \u05e2\u05d3 \u05dc${formattedTime} \u05e2\u05dd \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4: ${message}`,
+            await client.users.send(
+                interaction.user.id,
+                "היי ההתראה שלך מוכנה והיא תהיה בעוד",
             );
-
             setTimeout(async () => {
                 await interaction.followUp(
                     `<@${interaction.user.id}> \u05d4\u05ea\u05e8\u05d0\u05d4! ${message}`,
@@ -216,17 +216,17 @@ export const commandHandlers: Record<string, CommandHandler> = {
             "<@1317796479511035956> טלללללללללללללללללללללל",
         );
     },
-    // voice: async (interaction) => {
-    //     const member = interaction.member as GuildMember;
-    //     if (!member.voice.channel) {
-    //         await interaction.reply("you are not in a voice channel");
-    //         return;
-    //     }
-    //     joinVoiceChannel({
-    //         channelId: member.voice.channel.id,
-    //         guildId: member.voice.channel.guild.id,
-    //         adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
-    //     });
-    //     await interaction.reply("joined voice channel");
-    // },
+    voice: async (interaction) => {
+        const member = interaction.member as GuildMember;
+        if (!member.voice.channel) {
+            await interaction.reply("you are not in a voice channel");
+            return;
+        }
+        joinVoiceChannel({
+            channelId: member.voice.channel.id,
+            guildId: member.voice.channel.guild.id,
+            adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
+        });
+        await interaction.reply("joined voice channel");
+    },
 };

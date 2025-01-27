@@ -119,4 +119,8 @@ export const commands = [
         name: "tal",
         description: "מספים את טל",
     },
+    {
+        name: "voice",
+        description: "מצטרף לחדר קולי",
+    },
 ];
