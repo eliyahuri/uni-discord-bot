@@ -6,7 +6,8 @@ import { commands } from "../utils/commandsList";
 import subjectTranslations from "../utils/translations";
 import { parseTimeToMilliseconds } from "./convertTime";
 import { joinVoiceChannel } from "@discordjs/voice";
-
+import axios from "axios";
+import config from "../config/config";
 interface MyCommand {
     name: string;
     description: string;
@@ -228,5 +229,65 @@ export const commandHandlers: Record<string, CommandHandler> = {
             adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
         });
         await interaction.reply("joined voice channel");
+    },
+
+    league: async (interaction) => {
+        try {
+            const summonerInput = interaction.options.getString("summoner");
+            if (!summonerInput) {
+                await interaction.reply("Please provide a summoner name.");
+                return;
+            }
+
+            // Safely encode the user input
+            const summonerName = encodeURIComponent(summonerInput.trim());
+
+            const response = await axios.get(
+                `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`,
+                {
+                    headers: {
+                        "X-Riot-Token": config.RIOT_API_KEY,
+                    },
+                },
+            );
+
+            const summonerData = response.data;
+            await interaction.reply(
+                `Summoner Name: ${summonerData.name}\nLevel: ${summonerData.summonerLevel}`,
+            );
+        } catch (error: any) {
+            console.error("Error fetching League of Legends data:", error);
+
+            if (error.response) {
+                switch (error.response.status) {
+                    case 400:
+                        await interaction.reply(
+                            "Bad request. Check the summoner name or try again later.",
+                        );
+                        break;
+                    case 403:
+                        await interaction.reply(
+                            "Access denied. Please check your Riot API key.",
+                        );
+                        break;
+                    case 404:
+                        await interaction.reply("Summoner not found.");
+                        break;
+                    case 429:
+                        await interaction.reply(
+                            "Rate limit exceeded. Please try again later.",
+                        );
+                        break;
+                    default:
+                        await interaction.reply(
+                            `An error occurred (${error.response.status}) while fetching the data.`,
+                        );
+                }
+            } else {
+                await interaction.reply(
+                    "An unexpected error occurred. Please try again later.",
+                );
+            }
+        }
     },
 };

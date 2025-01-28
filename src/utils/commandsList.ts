@@ -120,7 +120,15 @@ export const commands = [
         description: "מספים את טל",
     },
     {
-        name: "voice",
-        description: "מצטרף לחדר קולי",
+        name: "league",
+        description: "מציג נתונים על משחק בלול",
+        options: [
+            {
+                type: 3,
+                name: "summoner",
+                description: "שם השחקן",
+                required: true,
+            },
+        ],
     },
 ];
