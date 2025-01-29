@@ -242,8 +242,9 @@ export const commandHandlers: Record<string, CommandHandler> = {
             // Safely encode the user input
             const summonerName = encodeURIComponent(summonerInput.trim());
 
+            // Use backticks to interpolate the summonerName variable in the URL
             const response = await axios.get(
-                `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`,
+                `https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`,
                 {
                     headers: {
                         "X-Riot-Token": config.RIOT_API_KEY,
@@ -252,6 +253,8 @@ export const commandHandlers: Record<string, CommandHandler> = {
             );
 
             const summonerData = response.data;
+
+            // Use backticks for the template string in interaction.reply
             await interaction.reply(
                 `Summoner Name: ${summonerData.name}\nLevel: ${summonerData.summonerLevel}`,
             );
@@ -262,7 +265,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
                 switch (error.response.status) {
                     case 400:
                         await interaction.reply(
-                            "Bad request. Check the summoner name or try again later.",
+                            `Bad request. Check the summoner name or try again later. Error: ${error.response.data.status.message}`,
                         );
                         break;
                     case 403:
