@@ -1,4 +1,8 @@
-import { ChatInputCommandInteraction, type GuildMember } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    MessageFlags,
+    type GuildMember,
+} from "discord.js";
 import fs from "fs";
 import path from "path";
 import { client } from "../config/client";
@@ -181,7 +185,10 @@ export const commandHandlers: Record<string, CommandHandler> = {
         const sentMessage = `ticket sent:\nfrom: <@${interaction.user.id}>\n it says: ${message}`;
         client.users.send("173926117172838401", sentMessage);
         client.users.send("762268300746686474", message);
-        await interaction.reply({ content: "ticket sent", ephemeral: true });
+        await interaction.reply({
+            content: "ticket sent",
+            flags: MessageFlags.Ephemeral,
+        });
     },
     poll: async (interaction) => {
         try {
@@ -228,5 +235,15 @@ export const commandHandlers: Record<string, CommandHandler> = {
             adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
         });
         await interaction.reply("joined voice channel");
+    },
+    noam: async (interaction) => {
+        await interaction.reply(
+            "נעםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםם <@402922149041405974>",
+        );
+    },
+    eliyahu: async (interaction) => {
+        await interaction.reply(
+            "אליהוווווווווווווווווווו <@173926117172838401>",
+        );
     },
 };

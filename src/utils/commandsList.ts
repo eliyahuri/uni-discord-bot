@@ -123,4 +123,6 @@ export const commands = [
         name: "voice",
         description: "מצטרף לחדר קולי",
     },
+    { name: "noam", description: "מספים את נועם" },
+    { name: "eliyahu", description: "מספים את אליהו" },
 ];
