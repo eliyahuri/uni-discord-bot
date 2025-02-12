@@ -125,4 +125,16 @@ export const commands = [
     },
     { name: "noam", description: "מספים את נועם" },
     { name: "eliyahu", description: "מספים את אליהו" },
+    {
+        name: "weather",
+        description: "מציג את מזג האוויר במקום מסוים",
+        options: [
+            {
+                type: 3,
+                name: "city",
+                description: "שם העיר",
+                required: true,
+            },
+        ],
+    },
 ];

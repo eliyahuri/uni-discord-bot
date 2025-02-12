@@ -1,3 +1,5 @@
+import { joinVoiceChannel } from "@discordjs/voice";
+import axios from "axios";
 import {
     ChatInputCommandInteraction,
     MessageFlags,
@@ -9,7 +11,6 @@ import { client } from "../config/client";
 import { commands } from "../utils/commandsList";
 import subjectTranslations from "../utils/translations";
 import { parseTimeToMilliseconds } from "./convertTime";
-import { joinVoiceChannel } from "@discordjs/voice";
 
 interface MyCommand {
     name: string;
@@ -245,5 +246,82 @@ export const commandHandlers: Record<string, CommandHandler> = {
         await interaction.reply(
             "אליהוווווווווווווווווווו <@173926117172838401>",
         );
+    },
+    weather: async (interaction: ChatInputCommandInteraction) => {
+        try {
+            let city = interaction.options.getString("city");
+            if (!city) {
+                await interaction.reply("Please provide a city name.");
+                return;
+            }
+
+            let latitude: number, longitude: number;
+
+            // **Hardcode coordinates for Lod, Israel to prevent confusion with Łódź, Poland**
+            if (city.toLowerCase() === "lod") {
+                latitude = 31.9511;
+                longitude = 34.8953;
+            } else {
+                // Step 1: Convert city name to latitude and longitude
+                const geoResponse = await axios.get(
+                    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&country=IL&format=json`,
+                );
+
+                if (
+                    !geoResponse.data.results ||
+                    geoResponse.data.results.length === 0
+                ) {
+                    await interaction.reply(
+                        `City "${city}" not found in Israel!`,
+                    );
+                    return;
+                }
+
+                latitude = geoResponse.data.results[0].latitude;
+                longitude = geoResponse.data.results[0].longitude;
+            }
+
+            // Step 2: Fetch weather using latitude and longitude
+            const weatherResponse = await axios.get(
+                `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode`,
+            );
+
+            const temperature = weatherResponse.data.current.temperature_2m;
+            const weatherCode = weatherResponse.data.current.weathercode;
+
+            // Convert weather code to readable description
+            const weatherDescriptions: Record<number, string> = {
+                0: "Clear sky ☀️",
+                1: "Mainly clear 🌤️",
+                2: "Partly cloudy ⛅",
+                3: "Overcast ☁️",
+                45: "Foggy 🌫️",
+                48: "Depositing rime fog ❄️",
+                51: "Light drizzle 🌦️",
+                53: "Moderate drizzle 🌧️",
+                55: "Heavy drizzle 🌧️",
+                61: "Light rain 🌦️",
+                63: "Moderate rain 🌧️",
+                65: "Heavy rain 🌧️",
+                80: "Light rain showers 🌦️",
+                81: "Moderate rain showers 🌧️",
+                82: "Heavy rain showers 🌧️",
+                95: "Thunderstorm ⛈️",
+                96: "Thunderstorm with light hail ⛈️",
+                99: "Thunderstorm with heavy hail ⛈️",
+            };
+
+            const weatherDescription =
+                weatherDescriptions[weatherCode] || "Unknown Weather";
+
+            await interaction.reply(
+                `The current weather in **${city}, Israel** is:\n🌡️ Temperature: **${temperature}°C**\n🌍 Condition: **${weatherDescription}**`,
+            );
+        } catch (error) {
+            console.error("Error in weather command:", error);
+            await interaction.reply(
+                "An error occurred while fetching the weather.",
+            );
+        }
     },
 };
