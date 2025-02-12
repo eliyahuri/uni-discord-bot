@@ -1,5 +1,5 @@
-import envVar from "env-var";
 import dotenv from "dotenv";
+import envVar from "env-var";
 
 dotenv.config();
 const config = {

@@ -1,8 +1,8 @@
+import { getVoiceConnection } from "@discordjs/voice";
 import { Events, type VoiceState } from "discord.js";
 import { client } from "./config/client";
 import config from "./config/config";
 import { commandHandlers } from "./functions/commandFunc";
-import { getVoiceConnection } from "@discordjs/voice";
 
 client.on(Events.ClientReady, (readyClient) => {
     console.info(`Logged in as ${readyClient.user.tag}!`);
