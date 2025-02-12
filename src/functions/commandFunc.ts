@@ -315,7 +315,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
                 weatherDescriptions[weatherCode] || "Unknown Weather";
 
             await interaction.reply(
-                `The current weather in **${city}, Israel** is:\n🌡️ Temperature: **${temperature}°C**\n🌍 Condition: **${weatherDescription}**`,
+                `The current weather in **${city}** is:\n🌡️ Temperature: **${temperature}°C**\n🌍 Condition: **${weatherDescription}**`,
             );
         } catch (error) {
             console.error("Error in weather command:", error);
