@@ -18,60 +18,31 @@
  * ```
  */
 export function parseTimeToMilliseconds(input: string): number | null {
-    const daysRegex = /(\d+)d/;
-    const hoursRegex = /(\d+)h/;
-    const minutesRegex = /(\d+)m/;
-    const secondsRegex = /(\d+)s/;
-    const hhmmRegex = /^(\d{1,2}):(\d{2})$/;
-
-    const parts = input.split(" ");
+    const regex =
+        /(?:(\d+)d)|(?:(\d+)h)|(?:(\d+)m)|(?:(\d+)s)|^(\d{1,2}):(\d{2})$/g;
     let totalMilliseconds = 0;
+    let match;
+    const now = new Date();
 
-    for (const part of parts) {
-        let match: RegExpExecArray | null;
-
-        match = daysRegex.exec(part);
-        if (match) {
-            totalMilliseconds += parseInt(match[1], 10) * 24 * 60 * 60 * 1000;
-            continue;
-        }
-
-        match = hoursRegex.exec(part);
-        if (match) {
-            totalMilliseconds += parseInt(match[1], 10) * 60 * 60 * 1000;
-            continue;
-        }
-
-        match = minutesRegex.exec(part);
-        if (match) {
-            totalMilliseconds += parseInt(match[1], 10) * 60 * 1000;
-            continue;
-        }
-
-        match = secondsRegex.exec(part);
-        if (match) {
-            totalMilliseconds += parseInt(match[1], 10) * 1000;
-            continue;
-        }
-
-        match = hhmmRegex.exec(part);
-        if (match) {
-            const now = new Date();
-            const hours = parseInt(match[1], 10);
-            const minutes = parseInt(match[2], 10);
-
+    while ((match = regex.exec(input)) !== null) {
+        if (match[1])
+            totalMilliseconds += parseInt(match[1], 10) * 86400000; // Days to ms
+        else if (match[2])
+            totalMilliseconds += parseInt(match[2], 10) * 3600000; // Hours to ms
+        else if (match[3])
+            totalMilliseconds += parseInt(match[3], 10) * 60000; // Minutes to ms
+        else if (match[4])
+            totalMilliseconds += parseInt(match[4], 10) * 1000; // Seconds to ms
+        else if (match[5] && match[6]) {
+            const hours = parseInt(match[5], 10);
+            const minutes = parseInt(match[6], 10);
             if (hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
                 const target = new Date(now);
                 target.setHours(hours, minutes, 0, 0);
-
-                if (target < now) {
-                    target.setDate(target.getDate() + 1);
-                }
-
+                if (target < now) target.setDate(target.getDate() + 1);
                 totalMilliseconds += target.getTime() - now.getTime();
             }
         }
     }
-
     return totalMilliseconds > 0 ? totalMilliseconds : null;
 }
