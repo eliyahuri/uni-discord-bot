@@ -21,6 +21,16 @@ type CommandHandler = (
     interaction: ChatInputCommandInteraction,
 ) => Promise<void>;
 
+const monkeys: string[] = [
+    "src/assets/monkeyImages/monkey1.jpg",
+    "src/assets/monkeyImages/monkey2.jpg",
+    "src/assets/monkeyImages/monkey3.jpg",
+    "src/assets/monkeyImages/monkey4.jpg",
+    "src/assets/monkeyImages/monkey5.jpg",
+    "src/assets/monkeyImages/monkey6.jpg",
+    "src/assets/monkeyImages/monkey7.jpg",
+];
+
 export const commandHandlers: Record<string, CommandHandler> = {
     ping: async (interaction) => {
         try {
@@ -323,5 +333,13 @@ export const commandHandlers: Record<string, CommandHandler> = {
                 "An error occurred while fetching the weather.",
             );
         }
+    },
+    monkey: async (interaction: ChatInputCommandInteraction) => {
+        const randomMonkey =
+            monkeys[Math.floor(Math.random() * monkeys.length)];
+        await interaction.reply({
+            content: "Here's a monkey for you:",
+            files: [randomMonkey],
+        });
     },
 };

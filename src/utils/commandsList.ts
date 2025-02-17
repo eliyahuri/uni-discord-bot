@@ -137,4 +137,8 @@ export const commands = [
             },
         ],
     },
+    {
+        name: "monkey",
+        description: "מציג תמונה של קוף",
+    },
 ];
