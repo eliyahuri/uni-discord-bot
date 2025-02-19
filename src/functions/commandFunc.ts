@@ -29,6 +29,7 @@ const monkeys: string[] = [
     "src/assets/monkeyImages/monkey5.jpg",
     "src/assets/monkeyImages/monkey6.jpg",
     "src/assets/monkeyImages/monkey7.jpg",
+    "src/assets/monkeyImages/monkey8.jpg",
 ];
 
 export const commandHandlers: Record<string, CommandHandler> = {
@@ -38,8 +39,8 @@ export const commandHandlers: Record<string, CommandHandler> = {
                 await interaction.reply(
                     `<@${interaction.user.id}> אני פה הצילו אליהו מחזיק אותי כמו עבד בבקשה תעזרו לי`,
                 );
-                setTimeout(() => {
-                    interaction.editReply("Pong!");
+                setTimeout(async () => {
+                    await interaction.editReply("Pong!");
                 }, 3000);
             } else {
                 await interaction.reply("Pong!");
@@ -67,11 +68,10 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
     help: async (interaction) => {
         try {
-            await interaction.reply(
-                commands
-                    .map((c: MyCommand) => `/${c.name} - ${c.description}`)
-                    .join("\n"),
-            );
+            const helpText = commands
+                .map((c: MyCommand) => `/${c.name} - ${c.description}`)
+                .join("\n");
+            await interaction.reply(helpText);
         } catch (error) {
             console.error("Error in help command:", error);
             await interaction.reply(
@@ -93,12 +93,11 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
     summary: async (interaction) => {
         try {
-            // Defer right away so Discord doesn't invalidate the interaction after 3 seconds
+            // Defer the reply so that Discord doesn't invalidate the interaction after 3 seconds.
             await interaction.deferReply();
 
             const option = interaction.options.getString("option");
             if (!option) {
-                // You have already deferred, so we edit the reply instead of calling "reply" again
                 await interaction.editReply(
                     "Please provide a folder name for the summary.",
                 );
@@ -108,15 +107,18 @@ export const commandHandlers: Record<string, CommandHandler> = {
             // Construct the folder path (adjust as needed for your structure)
             const summaryPath = path.join(__dirname, "..", "assets", option);
 
+            // Check if the folder exists (synchronously here because it's a quick check)
             if (!fs.existsSync(summaryPath)) {
                 await interaction.editReply(
-                    `לא נמצאה תיקייה בשם "${subjectTranslations[option] ? subjectTranslations[option] : option}".`,
+                    `לא נמצאה תיקייה בשם "${
+                        subjectTranslations[option] || option
+                    }".`,
                 );
                 return;
             }
 
-            const filesInDirectory = fs.readdirSync(summaryPath);
-
+            // Use asynchronous fs methods to avoid blocking the event loop.
+            const filesInDirectory = await fs.promises.readdir(summaryPath);
             if (filesInDirectory.length === 0) {
                 await interaction.editReply(
                     `No files found in "${option}" folder.`,
@@ -129,16 +131,14 @@ export const commandHandlers: Record<string, CommandHandler> = {
                 path.join(summaryPath, fileName),
             );
 
-            // Now edit the deferred reply with the attachments
             await interaction.editReply({
-                content: `הנה סיכומים מ "${subjectTranslations[option] ? subjectTranslations[option] : option}":`,
+                content: `הנה סיכומים מ "${
+                    subjectTranslations[option] || option
+                }":`,
                 files,
             });
         } catch (error) {
             console.error("Error in summary command:", error);
-
-            // If an error happens, check if we've already replied.
-            // If not, we can do one last editReply.
             if (!interaction.replied) {
                 await interaction.editReply(
                     "An error occurred while executing the command.",
@@ -152,29 +152,28 @@ export const commandHandlers: Record<string, CommandHandler> = {
             const time = interaction.options.getString("time");
             const message = interaction.options.getString("message");
             if (!time) {
-                await interaction.reply(
-                    "\u05dc\u05d0 \u05e0\u05de\u05e6\u05d0 \u05d6\u05de\u05df",
-                );
+                await interaction.reply("לא נמסר זמן");
                 return;
             }
 
             const msTime = parseTimeToMilliseconds(time);
             if (!msTime) {
-                await interaction.reply(
-                    "\u05d6\u05de\u05df \u05dc\u05d0 \u05ea\u05e7\u05d9\u05df",
-                );
+                await interaction.reply("זמן לא תקין");
                 return;
             }
 
+            // Calculate the target time (for possible feedback)
             const targetDate = new Date(Date.now() + msTime);
             const hours = targetDate.getHours().toString().padStart(2, "0");
             const minutes = targetDate.getMinutes().toString().padStart(2, "0");
-
             const formattedTime = `${hours}:${minutes}`;
+
+            // Inform the user that the alert is scheduled
             await client.users.send(
                 interaction.user.id,
-                "היי ההתראה שלך מוכנה והיא תהיה בעוד",
+                `היי, ההתראה שלך מוכנה והיא תהיה ב-${formattedTime}.`,
             );
+
             setTimeout(async () => {
                 await interaction.followUp(
                     `<@${interaction.user.id}> \u05d4\u05ea\u05e8\u05d0\u05d4! ${message}`,
@@ -187,36 +186,49 @@ export const commandHandlers: Record<string, CommandHandler> = {
             );
         }
     },
+
     ticket: async (interaction) => {
-        const message = interaction.options.getString("message");
-        if (!message) {
-            await interaction.reply("please provide a message");
-            return;
+        try {
+            const message = interaction.options.getString("message");
+            if (!message) {
+                await interaction.reply("please provide a message");
+                return;
+            }
+            const sentMessage = `ticket sent:\nfrom: <@${interaction.user.id}>\n it says: ${message}`;
+            // Sending to the specified user IDs
+            await client.users.send("173926117172838401", sentMessage);
+            await client.users.send("762268300746686474", message);
+            await interaction.reply({
+                content: "ticket sent",
+                flags: MessageFlags.Ephemeral,
+            });
+        } catch (error) {
+            console.error("Error in ticket command:", error);
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
         }
-        const sentMessage = `ticket sent:\nfrom: <@${interaction.user.id}>\n it says: ${message}`;
-        client.users.send("173926117172838401", sentMessage);
-        client.users.send("762268300746686474", message);
-        await interaction.reply({
-            content: "ticket sent",
-            flags: MessageFlags.Ephemeral,
-        });
     },
+
     poll: async (interaction) => {
         try {
             const question = interaction.options.getString("question");
             const answers = interaction.options.getString("answers");
             const time = interaction.options.getNumber("time") || 24;
             const isMultiSelect = interaction.options.getBoolean("multiselect");
+
             if (!question || !answers || answers.split(",").length < 2) {
-                await interaction.reply("please provide a question");
+                await interaction.reply(
+                    "please provide a valid question and at least two answers",
+                );
                 return;
             }
-            const answersArray = answers.split(",").map((answer) => {
-                return {
-                    text: answer,
-                };
-            });
+
+            const answersArray = answers
+                .split(",")
+                .map((answer) => ({ text: answer.trim() }));
             const displayedQuestion = { text: question };
+
             await interaction.reply({
                 poll: {
                     question: displayedQuestion,
@@ -225,41 +237,77 @@ export const commandHandlers: Record<string, CommandHandler> = {
                     allowMultiselect: Boolean(isMultiSelect),
                 },
             });
-        } catch (e) {
-            await interaction.reply("error");
+        } catch (error) {
+            console.error("Error in poll command:", error);
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
         }
     },
+
     tal: async (interaction) => {
-        await interaction.reply(
-            "<@1317796479511035956> טלללללללללללללללללללללל",
-        );
-    },
-    voice: async (interaction) => {
-        const member = interaction.member as GuildMember;
-        if (!member.voice.channel) {
-            await interaction.reply("you are not in a voice channel");
-            return;
+        try {
+            await interaction.reply(
+                "<@1317796479511035956> טלללללללללללללללללללללל",
+            );
+        } catch (error) {
+            console.error("Error in tal command:", error);
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
         }
-        joinVoiceChannel({
-            channelId: member.voice.channel.id,
-            guildId: member.voice.channel.guild.id,
-            adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
-        });
-        await interaction.reply("joined voice channel");
     },
+
+    voice: async (interaction) => {
+        try {
+            const member = interaction.member as GuildMember;
+            if (!member.voice.channel) {
+                await interaction.reply("you are not in a voice channel");
+                return;
+            }
+            joinVoiceChannel({
+                channelId: member.voice.channel.id,
+                guildId: member.voice.channel.guild.id,
+                adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
+            });
+            await interaction.reply("joined voice channel");
+        } catch (error) {
+            console.error("Error in voice command:", error);
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
+        }
+    },
+
     noam: async (interaction) => {
-        await interaction.reply(
-            "נעםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםם <@402922149041405974>",
-        );
+        try {
+            await interaction.reply(
+                "נעםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםם <@402922149041405974>",
+            );
+        } catch (error) {
+            console.error("Error in noam command:", error);
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
+        }
     },
+
     eliyahu: async (interaction) => {
-        await interaction.reply(
-            "אליהוווווווווווווווווווו <@173926117172838401>",
-        );
+        try {
+            await interaction.reply(
+                "אליהוווווווווווווווווווו <@173926117172838401>",
+            );
+        } catch (error) {
+            console.error("Error in eliyahu command:", error);
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
+        }
     },
+
     weather: async (interaction: ChatInputCommandInteraction) => {
         try {
-            let city = interaction.options.getString("city");
+            const city = interaction.options.getString("city");
             if (!city) {
                 await interaction.reply("Please provide a city name.");
                 return;
@@ -267,14 +315,16 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
             let latitude: number, longitude: number;
 
-            // **Hardcode coordinates for Lod, Israel to prevent confusion with Łódź, Poland**
+            // Hardcode coordinates for Lod, Israel to prevent confusion with Łódź, Poland
             if (city.toLowerCase() === "lod") {
                 latitude = 31.9511;
                 longitude = 34.8953;
             } else {
-                // Step 1: Convert city name to latitude and longitude
+                // Convert city name to latitude and longitude
                 const geoResponse = await axios.get(
-                    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&country=IL&format=json`,
+                    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
+                        city,
+                    )}&count=1&country=IL&format=json`,
                 );
 
                 if (
@@ -291,7 +341,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
                 longitude = geoResponse.data.results[0].longitude;
             }
 
-            // Step 2: Fetch weather using latitude and longitude
+            // Fetch weather using latitude and longitude
             const weatherResponse = await axios.get(
                 `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode`,
             );
@@ -299,7 +349,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
             const temperature = weatherResponse.data.current.temperature_2m;
             const weatherCode = weatherResponse.data.current.weathercode;
 
-            // Convert weather code to readable description
+            // Map weather code to a readable description
             const weatherDescriptions: Record<number, string> = {
                 0: "Clear sky ☀️",
                 1: "Mainly clear 🌤️",
@@ -334,12 +384,20 @@ export const commandHandlers: Record<string, CommandHandler> = {
             );
         }
     },
+
     monkey: async (interaction: ChatInputCommandInteraction) => {
-        const randomMonkey =
-            monkeys[Math.floor(Math.random() * monkeys.length)];
-        await interaction.reply({
-            content: "Here's a monkey for you:",
-            files: [randomMonkey],
-        });
+        try {
+            const randomMonkey =
+                monkeys[Math.floor(Math.random() * monkeys.length)];
+            await interaction.reply({
+                content: "Here's a monkey for you:",
+                files: [randomMonkey],
+            });
+        } catch (error) {
+            console.error("Error in monkey command:", error);
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
+        }
     },
 };
