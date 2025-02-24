@@ -141,4 +141,16 @@ export const commands = [
         name: "monkey",
         description: "מציג תמונה של קוף",
     },
+    {
+        name: "roll",
+        description: "מטיל קוביה",
+        options: [
+            {
+                type: 4,
+                name: "sides",
+                description: "מספר פאות (דיפולטיבי 6)",
+                required: false,
+            },
+        ],
+    },
 ];

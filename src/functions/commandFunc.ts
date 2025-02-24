@@ -400,4 +400,16 @@ export const commandHandlers: Record<string, CommandHandler> = {
             );
         }
     },
+    roll: async (interaction) => {
+        try {
+            const sides = interaction.options.getInteger("sides") || 6;
+            const randomNum = Math.floor(Math.random() * sides) + 1;
+            await interaction.reply(`You rolled a ${randomNum}!`);
+        } catch (error) {
+            console.error("Error in roll command:", error);
+            await interaction.reply(
+                "An error occurred while executing the command.",
+            );
+        }
+    },
 };
