@@ -28,7 +28,10 @@ const monkeys: string[] = [
     "src/assets/monkeyImages/monkey8.jpg",
 ];
 
-export const commandHandlers: Record<string, CommandHandler> = {
+// Extract command names from commands list for type-safe handlers
+type CommandName = (typeof commands)[number]["name"];
+
+export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
     ping: async (interaction) => {
         try {
             if (Math.random() <= 0.1) {
@@ -145,12 +148,8 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
     alert: async (interaction) => {
         try {
-            const time = interaction.options.getString("time");
-            const message = interaction.options.getString("message");
-            if (!time) {
-                await interaction.reply("לא נמסר זמן");
-                return;
-            }
+            const time = interaction.options.getString("time", true);
+            const message = interaction.options.getString("message", true);
 
             const msTime = parseTimeToMilliseconds(time);
             if (!msTime) {
@@ -171,9 +170,13 @@ export const commandHandlers: Record<string, CommandHandler> = {
             );
 
             setTimeout(async () => {
-                await interaction.followUp(
-                    `<@${interaction.user.id}> \u05d4\u05ea\u05e8\u05d0\u05d4! ${message}`,
-                );
+                try {
+                    await interaction.followUp(
+                        `<@${interaction.user.id}> התראה! ${message}`,
+                    );
+                } catch (err) {
+                    console.error("Failed to send alert follow-up", err);
+                }
             }, msTime);
         } catch (error) {
             console.error("Error in alert command:", error);
@@ -208,12 +211,13 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
     poll: async (interaction) => {
         try {
-            const question = interaction.options.getString("question");
-            const answers = interaction.options.getString("answers");
-            const time = interaction.options.getNumber("time") || 24;
-            const isMultiSelect = interaction.options.getBoolean("multiselect");
+            const question = interaction.options.getString("question", true);
+            const answers = interaction.options.getString("answers", true);
+            const duration = interaction.options.getNumber("time") ?? 24;
+            const allowMulti =
+                interaction.options.getBoolean("multiselect") ?? false;
 
-            if (!question || !answers || answers.split(",").length < 2) {
+            if (answers.split(",").length < 2) {
                 await interaction.reply(
                     "please provide a valid question and at least two answers",
                 );
@@ -222,15 +226,15 @@ export const commandHandlers: Record<string, CommandHandler> = {
 
             const answersArray = answers
                 .split(",")
-                .map((answer) => ({ text: answer.trim() }));
+                .map((ans) => ({ text: ans.trim() }));
             const displayedQuestion = { text: question };
 
             await interaction.reply({
                 poll: {
                     question: displayedQuestion,
                     answers: answersArray,
-                    duration: time,
-                    allowMultiselect: Boolean(isMultiSelect),
+                    duration,
+                    allowMultiselect: allowMulti,
                 },
             });
         } catch (error) {
@@ -406,6 +410,52 @@ export const commandHandlers: Record<string, CommandHandler> = {
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
+        }
+    },
+
+    // New command: echo a message back to the user
+    echo: async (interaction) => {
+        try {
+            const text = interaction.options.getString("text", true);
+            await interaction.reply(text);
+        } catch (error) {
+            console.error("Error in echo command:", error);
+            await interaction.reply("Failed to echo your message.");
+        }
+    },
+
+    // New command: display user info
+    userinfo: async (interaction) => {
+        try {
+            const user = interaction.options.getUser("user", true);
+            const member = interaction.guild?.members.cache.get(user.id);
+            const joined = member?.joinedAt?.toLocaleDateString() || "Unknown";
+            const created = user.createdAt.toLocaleDateString();
+            await interaction.reply(
+                `User: ${user.tag}\nCreated: ${created}\nJoined Server: ${joined}`,
+            );
+        } catch (error) {
+            console.error("Error in userinfo command:", error);
+            await interaction.reply("Failed to fetch user info.");
+        }
+    },
+
+    // New command: display server info
+    serverinfo: async (interaction) => {
+        try {
+            const guild = interaction.guild;
+            if (!guild) {
+                await interaction.reply(
+                    "This command must be used in a server.",
+                );
+                return;
+            }
+            await interaction.reply(
+                `Server: ${guild.name}\nMembers: ${guild.memberCount}`,
+            );
+        } catch (error) {
+            console.error("Error in serverinfo command:", error);
+            await interaction.reply("Failed to fetch server info.");
         }
     },
 };
