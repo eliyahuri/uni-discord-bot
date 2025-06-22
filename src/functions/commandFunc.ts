@@ -1,10 +1,6 @@
 import { joinVoiceChannel } from "@discordjs/voice";
 import axios from "axios";
-import {
-    ChatInputCommandInteraction,
-    MessageFlags,
-    type GuildMember,
-} from "discord.js";
+import { ChatInputCommandInteraction, type GuildMember } from "discord.js";
 import fs from "fs";
 import path from "path";
 import { client } from "../config/client";
@@ -200,7 +196,7 @@ export const commandHandlers: Record<string, CommandHandler> = {
             await client.users.send("762268300746686474", message);
             await interaction.reply({
                 content: "ticket sent",
-                flags: MessageFlags.Ephemeral,
+                ephemeral: true,
             });
         } catch (error) {
             console.error("Error in ticket command:", error);

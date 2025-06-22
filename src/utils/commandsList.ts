@@ -26,30 +26,9 @@ export const commands = [
                 description: "The option to select",
                 required: true,
                 choices: [
-                    {
-                        name: "אינפי 1",
-                        value: "infi1",
-                    },
-                    {
-                        name: "לוגיקה",
-                        value: "logics",
-                    },
-                    {
-                        name: "ליניארית 1",
-                        value: "linear1",
-                    },
-                    {
-                        name: "חישוב",
-                        value: "programming",
-                    },
-                    {
-                        name: "ספרתיות",
-                        value: "booleanAlgebra",
-                    },
-                    {
-                        name: "מדעי הנתונים",
-                        value: "dataScience",
-                    },
+                    { name: "אינפי 1", value: "infi1" },
+                    { name: "לוגיקה", value: "booleanAlgebra" },
+                    { name: "ליניארית 1", value: "linear1" },
                 ],
             },
         ],

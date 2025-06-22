@@ -1,19 +1,12 @@
-const { FlatCompat } = require("@eslint/eslintrc");
-const compat = new FlatCompat();
-
+// Simple ESLint flat config for TypeScript
 module.exports = [
     {
         ignores: ["node_modules", "dist"],
     },
-    ...compat.extends(
-        "airbnb-base",
-        "airbnb-typescript/base",
-        "plugin:@typescript-eslint/recommended"
-    ),
     {
         files: ["src/**/*.ts"],
         languageOptions: {
-            parser: "@typescript-eslint/parser",
+            parser: require("@typescript-eslint/parser"),
             parserOptions: {
                 project: "./tsconfig.json",
                 tsconfigRootDir: __dirname,
@@ -24,8 +17,11 @@ module.exports = [
             "@typescript-eslint": require("@typescript-eslint/eslint-plugin"),
         },
         rules: {
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                { argsIgnorePattern: "^_" },
+            ],
             indent: ["error", 4],
-            // Additional rules can be added here
         },
     },
 ];
