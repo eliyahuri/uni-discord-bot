@@ -1,3 +1,8 @@
+import type { commands as CommandList } from "../utils/commandsList";
+
+// Derive command names from the commands list for type-safe handlers
+export type CommandName = (typeof CommandList)[number]["name"];
+
 import ping from "./ping";
 import representatives from "./representatives";
 import help from "./help";
@@ -21,8 +26,8 @@ export type CommandHandler = (
     interaction: ChatInputCommandInteraction,
 ) => Promise<void>;
 
-// Command handlers map
-export const commandHandlers: Record<string, CommandHandler> = {
+// Command handlers map, now type-safe with known command names
+export const commandHandlers: Record<CommandName, CommandHandler> = {
     ping,
     representatives,
     help,

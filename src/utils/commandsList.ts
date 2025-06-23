@@ -1,4 +1,7 @@
-export const commands = [
+import type { RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
+
+// Add explicit type annotations for Discord application commands
+export const commands: RESTPostAPIApplicationCommandsJSONBody[] = [
     {
         name: "ping",
         description: "Replies with Pong!",
