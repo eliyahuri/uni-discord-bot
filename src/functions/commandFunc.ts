@@ -11,30 +11,22 @@ import messages from "../utils/messages";
 import { format } from "../utils/format";
 import logger from "../utils/logger";
 
-interface MyCommand {
-    name: string;
-    description: string;
-}
-
+// Derive command name and handler types
+type CommandName = (typeof commands)[number]["name"];
 type CommandHandler = (
     interaction: ChatInputCommandInteraction,
 ) => Promise<void>;
 
-const monkeys: string[] = [
-    // Generate monkey image paths dynamically
-    ...Array.from({ length: 8 }, (_, i) =>
-        path.join(
-            __dirname,
-            "..",
-            "assets",
-            "monkeyImages",
-            `monkey${i + 1}.jpg`,
-        ),
-    ),
-];
+// List of monkey image file paths
+const monkeys: string[] = Array.from({ length: 8 }, (_, i) =>
+    path.join(__dirname, "..", "assets", "monkeyImages", `monkey${i + 1}.jpg`),
+);
 
-// Extract command names from commands list for type-safe handlers
-type CommandName = (typeof commands)[number]["name"];
+// Simplified command definition for help text
+interface AppCommand {
+    name: string;
+    description: string;
+}
 
 /**
  * Map of command handlers for various slash commands.
@@ -87,8 +79,8 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
      */
     help: async (interaction) => {
         try {
-            const helpText = commands
-                .map((c: MyCommand) => `/${c.name} - ${c.description}`)
+            const helpText = (commands as AppCommand[])
+                .map((c) => `/${c.name} - ${c.description}`)
                 .join("\n");
             await interaction.reply(
                 format(messages.commands.help, { helpText }),

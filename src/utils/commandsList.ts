@@ -1,7 +1,7 @@
-import type { RESTPostAPIApplicationCommandsJSONBody } from "discord.js";
+import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
 
 // Add explicit type annotations for Discord application commands
-export const commands: RESTPostAPIApplicationCommandsJSONBody[] = [
+export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
     {
         name: "ping",
         description: "Replies with Pong!",
