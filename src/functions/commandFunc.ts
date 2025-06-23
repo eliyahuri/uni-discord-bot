@@ -7,6 +7,8 @@ import { client } from "../config/client";
 import { commands } from "../utils/commandsList";
 import subjectTranslations from "../utils/translations";
 import { parseTimeToMilliseconds } from "./convertTime";
+import messages from "../utils/messages";
+import { format } from "../utils/format";
 
 interface MyCommand {
     name: string;
@@ -31,54 +33,74 @@ const monkeys: string[] = [
 // Extract command names from commands list for type-safe handlers
 type CommandName = (typeof commands)[number]["name"];
 
+/**
+ * Map of command handlers for various slash commands.
+ * Each handler processes a ChatInputCommandInteraction and returns a Promise.
+ */
 export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
+    /**
+     * Handler for the /ping command. Replies with a random joke or a standard ping response.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     ping: async (interaction) => {
         try {
             if (Math.random() <= 0.1) {
                 await interaction.reply(
-                    `<@${interaction.user.id}> אני פה הצילו אליהו מחזיק אותי כמו עבד בבקשה תעזרו לי`,
+                    format(messages.commands.ping.joke, {
+                        userId: interaction.user.id,
+                    }),
                 );
                 setTimeout(async () => {
-                    await interaction.editReply("Pong!");
+                    await interaction.editReply(messages.commands.ping.reply);
                 }, 3000);
             } else {
-                await interaction.reply("Pong!");
+                await interaction.reply(messages.commands.ping.reply);
             }
         } catch (error) {
             console.error("Error in ping command:", error);
-            await interaction.reply(
-                "An error occurred while executing the command.",
-            );
+            await interaction.reply(messages.errors.errorOccurred);
         }
     },
 
+    /**
+     * Handler for the /representatives command. Replies with the representatives message.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     representatives: async (interaction) => {
         try {
-            await interaction.reply(
-                "יגל גרוס: 0515204882 \n אליהו חורי: 0584304307",
-            );
+            await interaction.reply(messages.commands.representatives);
         } catch (error) {
             console.error("Error in representatives command:", error);
-            await interaction.reply(
-                "An error occurred while executing the command.",
-            );
+            await interaction.reply(messages.errors.errorOccurred);
         }
     },
 
+    /**
+     * Handler for the /help command. Sends a list of available commands and descriptions.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     help: async (interaction) => {
         try {
             const helpText = commands
                 .map((c: MyCommand) => `/${c.name} - ${c.description}`)
                 .join("\n");
-            await interaction.reply(helpText);
+            await interaction.reply(
+                format(messages.commands.help, { helpText }),
+            );
         } catch (error) {
             console.error("Error in help command:", error);
-            await interaction.reply(
-                "An error occurred while executing the command.",
-            );
+            await interaction.reply(messages.errors.errorOccurred);
         }
     },
 
+    /**
+     * Handler for the /pizza command. Sends a pizza invitation message.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     pizza: async (interaction) => {
         try {
             await interaction.reply("@here בואו לפיצה הדיקן בשעה 20:00");
@@ -90,62 +112,63 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
+    /**
+     * Handler for the /summary command. Sends files from the specified summary folder.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     summary: async (interaction) => {
         try {
-            // Defer the reply so that Discord doesn't invalidate the interaction after 3 seconds.
             await interaction.deferReply();
 
             const option = interaction.options.getString("option");
             if (!option) {
-                await interaction.editReply(
-                    "Please provide a folder name for the summary.",
-                );
+                await interaction.editReply(messages.commands.provideOption);
                 return;
             }
 
-            // Construct the folder path (adjust as needed for your structure)
             const summaryPath = path.join(__dirname, "..", "assets", option);
 
-            // Check if the folder exists (synchronously here because it's a quick check)
             if (!fs.existsSync(summaryPath)) {
                 await interaction.editReply(
-                    `לא נמצאה תיקייה בשם "${
-                        subjectTranslations[option] || option
-                    }".`,
+                    format(messages.commands.unknownFolder, {
+                        folderName: subjectTranslations[option] || option,
+                    }),
                 );
                 return;
             }
 
-            // Use asynchronous fs methods to avoid blocking the event loop.
             const filesInDirectory = await fs.promises.readdir(summaryPath);
             if (filesInDirectory.length === 0) {
                 await interaction.editReply(
-                    `No files found in "${option}" folder.`,
+                    format(messages.commands.noFiles, { folderName: option }),
                 );
                 return;
             }
 
-            // Map filenames to full paths
             const files = filesInDirectory.map((fileName) =>
                 path.join(summaryPath, fileName),
             );
 
             await interaction.editReply({
-                content: `הנה סיכומים מ "${
-                    subjectTranslations[option] || option
-                }":`,
+                content: format(messages.commands.summaryHeader, {
+                    folderName: subjectTranslations[option] || option,
+                }),
                 files,
             });
         } catch (error) {
             console.error("Error in summary command:", error);
             if (!interaction.replied) {
-                await interaction.editReply(
-                    "An error occurred while executing the command.",
-                );
+                await interaction.editReply(messages.errors.errorOccurred);
             }
         }
     },
 
+    /**
+     * Handler for the /alert command. Schedules an alert message to the user after a delay.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     alert: async (interaction) => {
         try {
             const time = interaction.options.getString("time", true);
@@ -186,6 +209,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
+    /**
+     * Handler for the /ticket command. Sends a ticket message to support users.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     ticket: async (interaction) => {
         try {
             const message = interaction.options.getString("message");
@@ -209,6 +237,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
+    /**
+     * Handler for the /poll command. Creates and sends a poll with the given question and answers.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     poll: async (interaction) => {
         try {
             const question = interaction.options.getString("question", true);
@@ -245,6 +278,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
+    /**
+     * Handler for the /tal command. Mentions and sends a message to Tal.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     tal: async (interaction) => {
         try {
             await interaction.reply(
@@ -258,6 +296,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
+    /**
+     * Handler for the /voice command. Joins the voice channel of the command issuer.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     voice: async (interaction) => {
         try {
             const member = interaction.member as GuildMember;
@@ -279,6 +322,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
+    /**
+     * Handler for the /noam command. Mentions and sends a message to Noam.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     noam: async (interaction) => {
         try {
             await interaction.reply(
@@ -292,6 +340,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
+    /**
+     * Handler for the /eliyahu command. Mentions and sends a message to Eliyahu.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     eliyahu: async (interaction) => {
         try {
             await interaction.reply(
@@ -305,6 +358,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
+    /**
+     * Handler for the /weather command. Provides the current weather for a specified city.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     weather: async (interaction: ChatInputCommandInteraction) => {
         try {
             const city = interaction.options.getString("city");
@@ -385,6 +443,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
+    /**
+     * Handler for the /monkey command. Sends a random monkey image.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     monkey: async (interaction: ChatInputCommandInteraction) => {
         try {
             const randomMonkey =
@@ -400,6 +463,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
             );
         }
     },
+    /**
+     * Handler for the /roll command. Rolls a virtual dice with a specified number of sides.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     roll: async (interaction) => {
         try {
             const sides = interaction.options.getInteger("sides") || 6;
@@ -413,7 +481,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
-    // New command: echo a message back to the user
+    /**
+     * Handler for the /echo command. Echos the provided text back to the user.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     echo: async (interaction) => {
         try {
             const text = interaction.options.getString("text", true);
@@ -424,7 +496,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
-    // New command: display user info
+    /**
+     * Handler for the /userinfo command. Displays information about a specified user.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     userinfo: async (interaction) => {
         try {
             const user = interaction.options.getUser("user", true);
@@ -440,7 +516,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         }
     },
 
-    // New command: display server info
+    /**
+     * Handler for the /serverinfo command. Displays information about the server.
+     * @param {ChatInputCommandInteraction} interaction - The interaction triggering this command.
+     * @returns {Promise<void>}
+     */
     serverinfo: async (interaction) => {
         try {
             const guild = interaction.guild;

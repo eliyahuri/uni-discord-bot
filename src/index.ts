@@ -3,20 +3,40 @@ import type { Interaction } from "discord.js";
 import { Events, type VoiceState } from "discord.js";
 import { client } from "./config/client";
 import config from "./config/config";
-import { commandHandlers } from "./functions/commandFunc";
+import { commandHandlers } from "./commands";
+// Add translations and formatting
+import messages from "./utils/messages";
+import { format } from "./utils/format";
 
 // Global error handling for unhandled promise rejections and exceptions
+/**
+ * Logs unhandled promise rejections to console.
+ * @param {any} reason - The reason for the unhandled rejection.
+ */
 process.on("unhandledRejection", (reason) => {
-    console.error("Unhandled Rejection at:", reason);
-});
-process.on("uncaughtException", (error) => {
-    console.error("Uncaught Exception:", error);
+    console.error(format(messages.errors.unhandledRejection, { reason }));
 });
 
+/**
+ * Logs uncaught exceptions to console.
+ * @param {Error} error - The uncaught exception error.
+ */
+process.on("uncaughtException", (error) => {
+    console.error(format(messages.errors.uncaughtException, { error }));
+});
+
+/**
+ * Logs when the Discord client is ready.
+ */
 client.once(Events.ClientReady, () => {
     console.info(`Logged in as ${client.user?.tag}!`);
 });
 
+/**
+ * Handles voice state updates to disconnect the bot when channel is empty.
+ * @param {VoiceState} oldState - Previous voice state.
+ * @param {VoiceState} newState - New voice state.
+ */
 client.on(
     Events.VoiceStateUpdate,
     async (oldState: VoiceState, newState: VoiceState) => {
@@ -37,9 +57,7 @@ client.on(
                 );
                 if (membersInChannel.size === 0) {
                     getVoiceConnection(oldState.guild.id)?.destroy();
-                    console.log(
-                        "Bot disconnected from the voice channel as it was left alone.",
-                    );
+                    console.log(messages.commands.voiceLeft);
                 }
             }
         } catch (error) {
@@ -48,6 +66,10 @@ client.on(
     },
 );
 
+/**
+ * Handles incoming interactions for chat input commands.
+ * @param {Interaction} interaction - The interaction object.
+ */
 client.on(Events.InteractionCreate, async (interaction: Interaction) => {
     try {
         if (!interaction.isChatInputCommand()) return;
@@ -60,19 +82,19 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
         if (handler) {
             await handler(interaction);
         } else if (interaction.isRepliable()) {
-            await interaction.reply("Unknown command.");
+            await interaction.reply(messages.commands.unknown);
         }
     } catch (error) {
-        console.error("Error handling interaction:", error);
+        console.error(format(messages.errors.interactionError, { error }));
         if (interaction.isRepliable() && !interaction.replied) {
-            await interaction.reply(
-                "An error occurred while processing your interaction.",
-            );
+            await interaction.reply(messages.errors.errorOccurred);
         }
     }
 });
 
-// Initialize and login the client with error handling
+/**
+ * Initializes and logs in the Discord client with error handling.
+ */
 (async () => {
     try {
         await client.login(config.TOKEN);
