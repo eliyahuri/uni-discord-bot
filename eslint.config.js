@@ -21,7 +21,6 @@ module.exports = [
                 "error",
                 { argsIgnorePattern: "^_" },
             ],
-            indent: ["error", 4],
         },
     },
 ];

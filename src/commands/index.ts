@@ -3,7 +3,17 @@ import representatives from "./representatives";
 import help from "./help";
 import userinfo from "./userinfo";
 import tal from "./tal";
-// ...import other commands when split...
+import pizza from "./pizza";
+import summary from "./summary";
+import alert from "./alert";
+import ticket from "./ticket";
+import poll from "./poll";
+import voice from "./voice";
+import noam from "./noam";
+import eliyahu from "./eliyahu";
+import weather from "./weather";
+import monkey from "./monkey";
+import roll from "./roll";
 import type { ChatInputCommandInteraction } from "discord.js";
 
 // Define common CommandHandler type
@@ -18,5 +28,15 @@ export const commandHandlers: Record<string, CommandHandler> = {
     help,
     userinfo,
     tal,
-    // ...add other commands here...
+    pizza,
+    summary,
+    alert,
+    ticket,
+    poll,
+    voice,
+    noam,
+    eliyahu,
+    weather,
+    monkey,
+    roll,
 };
