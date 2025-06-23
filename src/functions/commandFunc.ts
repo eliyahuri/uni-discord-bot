@@ -9,6 +9,7 @@ import subjectTranslations from "../utils/translations";
 import { parseTimeToMilliseconds } from "./convertTime";
 import messages from "../utils/messages";
 import { format } from "../utils/format";
+import logger from "../utils/logger";
 
 interface MyCommand {
     name: string;
@@ -20,14 +21,16 @@ type CommandHandler = (
 ) => Promise<void>;
 
 const monkeys: string[] = [
-    "src/assets/monkeyImages/monkey1.jpg",
-    "src/assets/monkeyImages/monkey2.jpg",
-    "src/assets/monkeyImages/monkey3.jpg",
-    "src/assets/monkeyImages/monkey4.jpg",
-    "src/assets/monkeyImages/monkey5.jpg",
-    "src/assets/monkeyImages/monkey6.jpg",
-    "src/assets/monkeyImages/monkey7.jpg",
-    "src/assets/monkeyImages/monkey8.jpg",
+    // Generate monkey image paths dynamically
+    ...Array.from({ length: 8 }, (_, i) =>
+        path.join(
+            __dirname,
+            "..",
+            "assets",
+            "monkeyImages",
+            `monkey${i + 1}.jpg`,
+        ),
+    ),
 ];
 
 // Extract command names from commands list for type-safe handlers
@@ -58,7 +61,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 await interaction.reply(messages.commands.ping.reply);
             }
         } catch (error) {
-            console.error("Error in ping command:", error);
+            logger.error(error, "Error in ping command");
             await interaction.reply(messages.errors.errorOccurred);
         }
     },
@@ -72,7 +75,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         try {
             await interaction.reply(messages.commands.representatives);
         } catch (error) {
-            console.error("Error in representatives command:", error);
+            logger.error(error, "Error in representatives command");
             await interaction.reply(messages.errors.errorOccurred);
         }
     },
@@ -91,7 +94,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 format(messages.commands.help, { helpText }),
             );
         } catch (error) {
-            console.error("Error in help command:", error);
+            logger.error(error, "Error in help command");
             await interaction.reply(messages.errors.errorOccurred);
         }
     },
@@ -105,7 +108,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
         try {
             await interaction.reply("@here בואו לפיצה הדיקן בשעה 20:00");
         } catch (error) {
-            console.error("Error in pizza command:", error);
+            logger.error(error, "Error in pizza command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -157,7 +160,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 files,
             });
         } catch (error) {
-            console.error("Error in summary command:", error);
+            logger.error(error, "Error in summary command");
             if (!interaction.replied) {
                 await interaction.editReply(messages.errors.errorOccurred);
             }
@@ -198,11 +201,11 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                         `<@${interaction.user.id}> התראה! ${message}`,
                     );
                 } catch (err) {
-                    console.error("Failed to send alert follow-up", err);
+                    logger.error(err, "Failed to send alert follow-up");
                 }
             }, msTime);
         } catch (error) {
-            console.error("Error in alert command:", error);
+            logger.error(error, "Error in alert command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -230,7 +233,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 ephemeral: true,
             });
         } catch (error) {
-            console.error("Error in ticket command:", error);
+            logger.error(error, "Error in ticket command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -271,7 +274,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 },
             });
         } catch (error) {
-            console.error("Error in poll command:", error);
+            logger.error(error, "Error in poll command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -289,7 +292,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 "<@1317796479511035956> טלללללללללללללללללללללל",
             );
         } catch (error) {
-            console.error("Error in tal command:", error);
+            logger.error(error, "Error in tal command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -315,7 +318,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
             });
             await interaction.reply("joined voice channel");
         } catch (error) {
-            console.error("Error in voice command:", error);
+            logger.error(error, "Error in voice command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -333,7 +336,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 "נעםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםם <@402922149041405974>",
             );
         } catch (error) {
-            console.error("Error in noam command:", error);
+            logger.error(error, "Error in noam command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -351,7 +354,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 "אליהוווווווווווווווווווו <@173926117172838401>",
             );
         } catch (error) {
-            console.error("Error in eliyahu command:", error);
+            logger.error(error, "Error in eliyahu command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -407,36 +410,22 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
             const temperature = weatherResponse.data.current.temperature_2m;
             const weatherCode = weatherResponse.data.current.weathercode;
 
-            // Map weather code to a readable description
-            const weatherDescriptions: Record<number, string> = {
-                0: "Clear sky ☀️",
-                1: "Mainly clear 🌤️",
-                2: "Partly cloudy ⛅",
-                3: "Overcast ☁️",
-                45: "Foggy 🌫️",
-                48: "Depositing rime fog ❄️",
-                51: "Light drizzle 🌦️",
-                53: "Moderate drizzle 🌧️",
-                55: "Heavy drizzle 🌧️",
-                61: "Light rain 🌦️",
-                63: "Moderate rain 🌧️",
-                65: "Heavy rain 🌧️",
-                80: "Light rain showers 🌦️",
-                81: "Moderate rain showers 🌧️",
-                82: "Heavy rain showers 🌧️",
-                95: "Thunderstorm ⛈️",
-                96: "Thunderstorm with light hail ⛈️",
-                99: "Thunderstorm with heavy hail ⛈️",
-            };
-
-            const weatherDescription =
-                weatherDescriptions[weatherCode] || "Unknown Weather";
-
+            // Use configured messages for weather output
+            const descriptions = messages.weatherDescriptions as Record<
+                number,
+                string
+            >;
+            const condition =
+                descriptions[weatherCode] || messages.commands.unknownWeather;
             await interaction.reply(
-                `The current weather in **${city}** is:\n🌡️ Temperature: **${temperature}°C**\n🌍 Condition: **${weatherDescription}**`,
+                format(messages.commands.weatherReport, {
+                    city,
+                    temperature,
+                    condition,
+                }),
             );
         } catch (error) {
-            console.error("Error in weather command:", error);
+            logger.error(error, "Error in weather command");
             await interaction.reply(
                 "An error occurred while fetching the weather.",
             );
@@ -457,7 +446,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 files: [randomMonkey],
             });
         } catch (error) {
-            console.error("Error in monkey command:", error);
+            logger.error(error, "Error in monkey command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -474,7 +463,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
             const randomNum = Math.floor(Math.random() * sides) + 1;
             await interaction.reply(`You rolled a ${randomNum}!`);
         } catch (error) {
-            console.error("Error in roll command:", error);
+            logger.error(error, "Error in roll command");
             await interaction.reply(
                 "An error occurred while executing the command.",
             );
@@ -491,7 +480,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
             const text = interaction.options.getString("text", true);
             await interaction.reply(text);
         } catch (error) {
-            console.error("Error in echo command:", error);
+            logger.error(error, "Error in echo command");
             await interaction.reply("Failed to echo your message.");
         }
     },
@@ -511,7 +500,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 `User: ${user.tag}\nCreated: ${created}\nJoined Server: ${joined}`,
             );
         } catch (error) {
-            console.error("Error in userinfo command:", error);
+            logger.error(error, "Error in userinfo command");
             await interaction.reply("Failed to fetch user info.");
         }
     },
@@ -534,7 +523,7 @@ export const commandHandlers: Partial<Record<CommandName, CommandHandler>> = {
                 `Server: ${guild.name}\nMembers: ${guild.memberCount}`,
             );
         } catch (error) {
-            console.error("Error in serverinfo command:", error);
+            logger.error(error, "Error in serverinfo command");
             await interaction.reply("Failed to fetch server info.");
         }
     },

@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import messages from "../utils/messages";
 import { format } from "../utils/format";
+import logger from "../utils/logger";
 
 /**
  * Handler for the /userinfo command. Replies with information about a specified user.
@@ -23,7 +24,7 @@ export default async function userinfo(
             }),
         );
     } catch (error) {
-        console.error("Error in userinfo command:", error);
+        logger.error(error, "Error in userinfo command");
         await interaction.reply(messages.commands.userinfoFailed);
     }
 }

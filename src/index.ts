@@ -7,6 +7,7 @@ import { commandHandlers } from "./commands";
 // Add translations and formatting
 import messages from "./utils/messages";
 import { format } from "./utils/format";
+import logger from "./utils/logger";
 
 // Global error handling for unhandled promise rejections and exceptions
 /**
@@ -14,7 +15,7 @@ import { format } from "./utils/format";
  * @param {any} reason - The reason for the unhandled rejection.
  */
 process.on("unhandledRejection", (reason) => {
-    console.error(format(messages.errors.unhandledRejection, { reason }));
+    logger.error(format(messages.errors.unhandledRejection, { reason }));
 });
 
 /**
@@ -22,14 +23,14 @@ process.on("unhandledRejection", (reason) => {
  * @param {Error} error - The uncaught exception error.
  */
 process.on("uncaughtException", (error) => {
-    console.error(format(messages.errors.uncaughtException, { error }));
+    logger.error(format(messages.errors.uncaughtException, { error }));
 });
 
 /**
  * Logs when the Discord client is ready.
  */
 client.once(Events.ClientReady, () => {
-    console.info(`Logged in as ${client.user?.tag}!`);
+    logger.info(`Logged in as ${client.user?.tag}!`);
 });
 
 /**
@@ -57,11 +58,11 @@ client.on(
                 );
                 if (membersInChannel.size === 0) {
                     getVoiceConnection(oldState.guild.id)?.destroy();
-                    console.log(messages.commands.voiceLeft);
+                    logger.info(messages.commands.voiceLeft);
                 }
             }
         } catch (error) {
-            console.error("Error in VoiceStateUpdate handler:", error);
+            logger.error("Error in VoiceStateUpdate handler:", error);
         }
     },
 );
@@ -74,7 +75,7 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
     try {
         if (!interaction.isChatInputCommand()) return;
 
-        console.info(
+        logger.info(
             `Received interaction ${interaction.commandName} from ${interaction.user.tag}`,
         );
 
@@ -85,7 +86,7 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
             await interaction.reply(messages.commands.unknown);
         }
     } catch (error) {
-        console.error(format(messages.errors.interactionError, { error }));
+        logger.error(format(messages.errors.interactionError, { error }));
         if (interaction.isRepliable() && !interaction.replied) {
             await interaction.reply(messages.errors.errorOccurred);
         }
@@ -99,6 +100,6 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
     try {
         await client.login(config.TOKEN);
     } catch (error) {
-        console.error("Failed to login:", error);
+        logger.error("Failed to login:", error);
     }
 })();

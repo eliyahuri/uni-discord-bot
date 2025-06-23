@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction } from "discord.js";
 import { commands as commandsList } from "../utils/commandsList";
 import messages from "../utils/messages";
 import { format } from "../utils/format";
+import logger from "../utils/logger";
 
 /**
  * Handler for the /help command. Sends a list of available commands with descriptions.
@@ -17,7 +18,7 @@ export default async function help(
             .join("\n");
         await interaction.reply(format(messages.commands.help, { helpText }));
     } catch (error) {
-        console.error("Error in help command:", error);
+        logger.error(error, "Error in help command");
         await interaction.reply(messages.errors.errorOccurred);
     }
 }
