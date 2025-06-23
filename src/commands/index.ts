@@ -2,6 +2,7 @@ import ping from "./ping";
 import representatives from "./representatives";
 import help from "./help";
 import userinfo from "./userinfo";
+import tal from "./tal";
 // ...import other commands when split...
 import type { ChatInputCommandInteraction } from "discord.js";
 
@@ -16,5 +17,6 @@ export const commandHandlers: Record<string, CommandHandler> = {
     representatives,
     help,
     userinfo,
+    tal,
     // ...add other commands here...
 };
