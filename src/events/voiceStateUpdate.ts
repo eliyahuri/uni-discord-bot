@@ -3,6 +3,7 @@ import { getVoiceConnection } from "@discordjs/voice";
 import { client } from "../config/client";
 import logger from "../utils/logger";
 import messages from "../utils/messages";
+import { syncVoiceSession } from "../voicePersonality";
 
 client.on(
     Events.VoiceStateUpdate,
@@ -27,6 +28,8 @@ client.on(
                     logger.info(messages.commands.voiceLeft);
                 }
             }
+
+            await syncVoiceSession(client, oldState.guild.id);
         } catch (error) {
             logger.error(error, "Error in VoiceStateUpdate handler");
         }

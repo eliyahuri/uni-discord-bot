@@ -4,6 +4,7 @@ import { commandHandlers } from "../commands";
 import messages from "../utils/messages";
 import { format } from "../utils/format";
 import logger from "../utils/logger";
+import { formatErrorResponse } from "../responseFormatter";
 
 client.on(Events.InteractionCreate, async (interaction: Interaction) => {
     try {
@@ -21,10 +22,13 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
         }
     } catch (error) {
         logger.error(format(messages.errors.interactionError, { error }));
+        const errorMessage = interaction.isRepliable()
+            ? await formatErrorResponse(interaction.user.id)
+            : messages.errors.errorOccurred;
         if (interaction.isRepliable() && interaction.deferred) {
-            await interaction.editReply(messages.errors.errorOccurred);
+            await interaction.editReply(errorMessage);
         } else if (interaction.isRepliable() && !interaction.replied) {
-            await interaction.reply(messages.errors.errorOccurred);
+            await interaction.reply(errorMessage);
         }
     }
 });

@@ -16,13 +16,19 @@ import random from "./random";
 import uptime from "./uptime";
 import tal from "./tal";
 import pizza from "./pizza";
+import food from "./food";
+import budget from "./budget";
 import summary from "./summary";
+import course from "./course";
 import alert from "./alert";
 import ticket from "./ticket";
 import poll from "./poll";
 import voice from "./voice";
 import noam from "./noam";
 import eliyahu from "./eliyahu";
+import oracle from "./oracle";
+import persona from "./persona";
+import deadline from "./deadline";
 import weather from "./weather";
 import monkey from "./monkey";
 import roll from "./roll";
@@ -48,13 +54,19 @@ export const commandHandlers: Record<CommandName, CommandHandler> = {
     uptime,
     tal,
     pizza,
+    food,
+    budget,
     summary,
+    course,
     alert,
     ticket,
     poll,
     voice,
     noam,
     eliyahu,
+    oracle,
+    persona,
+    deadline,
     weather,
     monkey,
     roll,

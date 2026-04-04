@@ -15,7 +15,7 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
     },
     {
         name: "help",
-        description: "מציג את רשימת הפקודות",
+        description: "מסביר לך איך לשרוד פה, תיאורטית",
         options: [
             {
                 type: ApplicationCommandOptionType.Boolean,
@@ -27,11 +27,55 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
     },
     {
         name: "pizza",
-        description: "מזכיר לכולם לבוא לפיצה",
+        description: "legacy פיצה, כי שינוי כואב לכולם",
+    },
+    {
+        name: "food",
+        description: "בוחר מה לאכול לפני שתתפרק",
+        options: [
+            {
+                type: ApplicationCommandOptionType.Subcommand,
+                name: "choose",
+                description: "ממליץ על אוכל בהתאם לתקציב ולקרייב",
+                options: [
+                    {
+                        type: ApplicationCommandOptionType.Integer,
+                        name: "budget",
+                        description: "תקציב בשקלים",
+                        required: false,
+                    },
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "craving",
+                        description: "מה בא לך, בערך",
+                        required: false,
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        name: "budget",
+        description: "שורד תקציב סטודנט בלי לקרוס לגמרי",
+        options: [
+            {
+                type: ApplicationCommandOptionType.Subcommand,
+                name: "survive",
+                description: "אומר מה נשאר לך לאכול עם התקציב הזה",
+                options: [
+                    {
+                        type: ApplicationCommandOptionType.Integer,
+                        name: "amount",
+                        description: "כמה כסף נשאר לך",
+                        required: true,
+                    },
+                ],
+            },
+        ],
     },
     {
         name: "summary",
-        description: "מציג סיכום של השיעור",
+        description: "legacy סיכומים. כן, עדיין חי",
 
         options: [
             {
@@ -50,6 +94,60 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
                 name: "contains",
                 description: "סינון קבצים לפי שם",
                 required: false,
+            },
+        ],
+    },
+    {
+        name: "course",
+        description: "שואל שאלה על קורס ומקבל תשובה עם attitude",
+        options: [
+            {
+                type: ApplicationCommandOptionType.Subcommand,
+                name: "ask",
+                description: "שואל משהו על קורס ספציפי",
+                options: [
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "course",
+                        description: "הקורס הרלוונטי",
+                        required: true,
+                        choices: [
+                            { name: "אינפי 1", value: "infi1" },
+                            { name: "מערכות ספרתיות", value: "booleanAlgebra" },
+                            { name: "ליניארית 1", value: "linear1" },
+                        ],
+                    },
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "question",
+                        description: "מה רצית לדעת ולא שאלת עד עכשיו",
+                        required: true,
+                    },
+                ],
+            },
+            {
+                type: ApplicationCommandOptionType.Subcommand,
+                name: "files",
+                description: "מחזיר קבצי סיכום רלוונטיים",
+                options: [
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "course",
+                        description: "הקורס הרלוונטי",
+                        required: true,
+                        choices: [
+                            { name: "אינפי 1", value: "infi1" },
+                            { name: "מערכות ספרתיות", value: "booleanAlgebra" },
+                            { name: "ליניארית 1", value: "linear1" },
+                        ],
+                    },
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "contains",
+                        description: "סינון לפי שם קובץ",
+                        required: false,
+                    },
+                ],
             },
         ],
     },
@@ -86,7 +184,7 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
     },
     {
         name: "poll",
-        description: "פותח סקר",
+        description: "פותח סקר עם יותר מדי מודעות עצמית",
         options: [
             {
                 type: 3,
@@ -116,17 +214,106 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
     },
     {
         name: "tal",
-        description: "מספים את טל",
+        description: "מוציא lore על טל",
     },
     {
         name: "voice",
-        description: "מצטרף לחדר קולי",
+        description: "נכנס לקול ושופט את שיטות הלמידה שלכם",
     },
-    { name: "noam", description: "מספים את נועם" },
-    { name: "eliyahu", description: "מספים את אליהו" },
+    { name: "noam", description: "מוציא lore על נועם" },
+    { name: "eliyahu", description: "מוציא lore על אליהו" },
+    {
+        name: "oracle",
+        description: "שואל את האורקל האקדמי הלא יציב",
+        options: [
+            {
+                type: ApplicationCommandOptionType.String,
+                name: "question",
+                description: "השאלה שאתה מפחד לשאול בן אדם אמיתי",
+                required: true,
+            },
+        ],
+    },
+    {
+        name: "persona",
+        description: "שולט ברמת הכאוס שהבוט מפעיל עליך",
+        options: [
+            {
+                type: ApplicationCommandOptionType.Subcommand,
+                name: "set",
+                description: "מגדיר את סגנון הדיבור אליך",
+                options: [
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "mode",
+                        description: "כמה אמת אתה מסוגל לשמוע",
+                        required: true,
+                        choices: [
+                            { name: "כאוס מלא", value: "chaos" },
+                            { name: "מאוזן", value: "balanced" },
+                            { name: "עדין יחסית", value: "gentle" },
+                            { name: "בלי עקיצות", value: "off" },
+                        ],
+                    },
+                ],
+            },
+            {
+                type: ApplicationCommandOptionType.Subcommand,
+                name: "view",
+                description: "מראה את ההגדרה הנוכחית שלך",
+            },
+        ],
+    },
+    {
+        name: "deadline",
+        description: "מנהל את חיי האקדמיה המתפוררים שלך",
+        options: [
+            {
+                type: ApplicationCommandOptionType.Subcommand,
+                name: "add",
+                description: "מוסיף דדליין חדש",
+                options: [
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "title",
+                        description: "שם המטלה או האסון",
+                        required: true,
+                    },
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "due",
+                        description: "תאריך בפורמט YYYY-MM-DD HH:MM או DD/MM/YYYY HH:MM",
+                        required: true,
+                    },
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "course",
+                        description: "הקורס הרלוונטי",
+                        required: false,
+                    },
+                    {
+                        type: ApplicationCommandOptionType.String,
+                        name: "notes",
+                        description: "עוד פרטים שיגרמו לך להצטער",
+                        required: false,
+                    },
+                ],
+            },
+            {
+                type: ApplicationCommandOptionType.Subcommand,
+                name: "list",
+                description: "מציג את כל הדדליינים",
+            },
+            {
+                type: ApplicationCommandOptionType.Subcommand,
+                name: "panic",
+                description: "מודד כמה רע המצב",
+            },
+        ],
+    },
     {
         name: "weather",
-        description: "מציג את מזג האוויר במקום מסוים",
+        description: "מזג אוויר עם פרשנות סטודנטיאלית מיותרת",
         options: [
             {
                 type: ApplicationCommandOptionType.String,

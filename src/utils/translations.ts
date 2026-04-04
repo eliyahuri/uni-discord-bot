@@ -1,6 +1,6 @@
 const subjectTranslations: Record<string, string> = {
     programming: "חישוב",
-    booleanAlgebra: "ספרתיות",
+    booleanAlgebra: "מערכות ספרתיות",
     dataScience: "מדעי הנתונים",
     infi1: "אינפי 1",
     logics: "לוגיקה",

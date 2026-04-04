@@ -1,5 +1,7 @@
 {
-    "include": ["src/**/*.ts"],
+    "include": [
+        "src/**/*.ts"
+    ],
     "compilerOptions": {
         "rootDir": "./src",
         "outDir": "./dist",
@@ -10,8 +12,13 @@
         "forceConsistentCasingInFileNames": true,
         "target": "ESNext",
         "checkJs": true,
-        "types": ["node"],
-        "lib": ["ESNext", "DOM"],
+        "types": [
+            "node"
+        ],
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
         "moduleResolution": "node",
         "ignoreDeprecations": "6.0",
         "pretty": true,

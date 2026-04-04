@@ -1,7 +1,8 @@
 import { joinVoiceChannel } from "@discordjs/voice";
 import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import logger from "../utils/logger";
-import messages from "../utils/messages";
+import { formatErrorResponse } from "../responseFormatter";
+import { getVoiceJoinLine, registerVoiceSession } from "../voicePersonality";
 
 export default async function voice(interaction: ChatInputCommandInteraction) {
     try {
@@ -9,7 +10,7 @@ export default async function voice(interaction: ChatInputCommandInteraction) {
 
         if (!member.voice.channel) {
             await interaction.reply({
-                content: messages.commands.notInVoice,
+                content: "אתה לא בקול. יהיה לי קשה לשפוט אתכם מרחוק.",
                 ephemeral: true,
             });
             return;
@@ -21,9 +22,16 @@ export default async function voice(interaction: ChatInputCommandInteraction) {
             adapterCreator: member.voice.channel.guild.voiceAdapterCreator,
         });
 
-        await interaction.reply(messages.commands.joinedVoice);
+        registerVoiceSession(
+            interaction.client,
+            member.voice.channel.guild.id,
+            member.voice.channel.id,
+            interaction.channel?.isTextBased() ? interaction.channel.id : undefined,
+        );
+
+        await interaction.reply(getVoiceJoinLine());
     } catch (error) {
         logger.error(error, "Error in voice command");
-        await interaction.reply(messages.errors.errorOccurred);
+        await interaction.reply(await formatErrorResponse(interaction.user.id));
     }
 }

@@ -1,8 +1,8 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import messages from "../utils/messages";
+import { getLore } from "../studentLore";
 
 export default async function eliyahu(
     interaction: ChatInputCommandInteraction,
 ) {
-    await interaction.reply(messages.commands.eliyahu);
+    await interaction.reply(`<@173926117172838401> ${getLore("eliyahu")}`);
 }

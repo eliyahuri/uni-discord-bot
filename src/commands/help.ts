@@ -1,8 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { commands as commandsList } from "../utils/commandsList";
-import messages from "../utils/messages";
-import { format } from "../utils/format";
 import logger from "../utils/logger";
+import { formatErrorResponse, formatResponse } from "../responseFormatter";
 
 /**
  * Handler for the /help command. Sends a list of available commands with descriptions.
@@ -28,12 +27,18 @@ export default async function help(
                 return `/${command.name}${args ? ` ${args}` : ""} - ${command.description}`;
             })
             .join("\n");
+        const header = await formatResponse(interaction.user.id, {
+            normal: "רשימת פקודות, כי apparently צריך להסביר הכל:",
+            funny: "אתה צריך עזרה? shocking. הנה כל הפקודות:",
+            spicy: "לא אידיאלי שאתה צריך את זה, אבל הנה. כל הפקודות:",
+        });
+
         await interaction.reply({
-            content: format(messages.commands.help, { helpText }),
+            content: `${header}\n\n${helpText}\n\n/persona set mode:<...> כדי להחליט כמה אמת אתה מסוגל לשמוע.`,
             ephemeral: isPrivate,
         });
     } catch (error) {
         logger.error(error, "Error in help command");
-        await interaction.reply(messages.errors.errorOccurred);
+        await interaction.reply(await formatErrorResponse(interaction.user.id));
     }
 }

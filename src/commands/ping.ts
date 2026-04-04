@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import messages from "../utils/messages";
-import { format } from "../utils/format";
 import logger from "../utils/logger";
+import { formatErrorResponse, formatResponse } from "../responseFormatter";
 
 /**
  * Handler for the /ping command. Replies with a joke or a simple pong message.
@@ -12,24 +11,15 @@ export default async function ping(
     interaction: ChatInputCommandInteraction,
 ): Promise<void> {
     try {
-        if (Math.random() <= 0.1) {
-            await interaction.reply(
-                format(messages.commands.ping.joke, {
-                    userId: interaction.user.id,
-                }),
-            );
-            setTimeout(() => {
-                void interaction.editReply(messages.commands.ping.reply).catch(
-                    (error) => {
-                        logger.error(error, "Error editing ping reply");
-                    },
-                );
-            }, 3000);
-        } else {
-            await interaction.reply(messages.commands.ping.reply);
-        }
+        const content = await formatResponse(interaction.user.id, {
+            normal: "כן כן אני חי.",
+            funny: "כן כן אני חי, לצערי גם אתה.",
+            spicy: "אני חי. לא יודע למה גם אתה בודק את זה במקום ללמוד.",
+        });
+
+        await interaction.reply(content);
     } catch (error) {
         logger.error(error, "Error in ping command");
-        await interaction.reply(messages.errors.errorOccurred);
+        await interaction.reply(await formatErrorResponse(interaction.user.id));
     }
 }

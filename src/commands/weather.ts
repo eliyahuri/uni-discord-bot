@@ -3,6 +3,23 @@ import axios from "axios";
 import { format } from "../utils/format";
 import logger from "../utils/logger";
 import messages from "../utils/messages";
+import { formatErrorResponse } from "../responseFormatter";
+
+function getStudentInterpretation(temperature: number) {
+    if (temperature >= 32) {
+        return "חם מדי ללמוד, קר מדי לא להרגיש אשם.";
+    }
+
+    if (temperature >= 26) {
+        return "מזג אוויר קלאסי לדחות למידה ולקרוא לזה self care.";
+    }
+
+    if (temperature >= 18) {
+        return "סביר. אין לך תירוץ טוב לא לפתוח את המחברת, וזה חבל מאוד.";
+    }
+
+    return "קר מספיק כדי להרגיש אינטלקטואלי, ועדיין לא מספיק כדי לשפר ציון.";
+}
 
 export default async function weather(
     interaction: ChatInputCommandInteraction,
@@ -49,14 +66,14 @@ export default async function weather(
             descriptions[weatherCode] ?? messages.commands.unknownWeather;
 
         await interaction.reply(
-            format(messages.commands.weatherReport, {
+            `${format(messages.commands.weatherReport, {
                 city: result.name,
                 temperature,
                 condition,
-            }),
+            })}\nפרשנות סטודנט: ${getStudentInterpretation(temperature)}`,
         );
     } catch (error) {
         logger.error(error, "Error in weather command");
-        await interaction.reply(messages.commands.weatherError);
+        await interaction.reply(await formatErrorResponse(interaction.user.id));
     }
 }

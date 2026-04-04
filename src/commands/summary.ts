@@ -1,8 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { getAssetFiles } from "../utils/assets";
-import { format } from "../utils/format";
-import messages from "../utils/messages";
 import logger from "../utils/logger";
+import { getCourseFiles } from "../courseService";
+import { formatErrorResponse, formatResponse } from "../responseFormatter";
 import subjectTranslations from "../utils/translations";
 
 export default async function summary(
@@ -14,46 +13,41 @@ export default async function summary(
         const option = interaction.options.getString("option", true);
         const query = interaction.options.getString("contains")?.trim();
         const translatedName = subjectTranslations[option] ?? option;
-        const allFiles = await getAssetFiles(option);
+        const allFiles = await getCourseFiles(option);
 
         if (allFiles.length === 0) {
             await interaction.editReply(
-                format(messages.commands.noFiles, {
-                    folderName: translatedName,
-                }),
+                `לא מצאתי קבצי סיכום עבור ${translatedName}. הקורס הזה כרגע יותר מסתורי מהמרצה.`,
             );
             return;
         }
 
         const matchingFiles = query
-            ? allFiles.filter((file) =>
-                  file.name.toLowerCase().includes(query.toLowerCase()),
-              )
+            ? await getCourseFiles(option, query)
             : allFiles;
 
         if (matchingFiles.length === 0) {
             await interaction.editReply(
-                format(messages.commands.summaryNoMatches, {
-                    folderName: translatedName,
-                    query,
-                }),
+                `לא מצאתי שום דבר עם "${query}" ב-${translatedName}. או שהחיפוש גרוע, או שהחומר מוסתר יפה.`,
             );
             return;
         }
 
-        if (matchingFiles.length > 10) {
+        if (matchingFiles.length > 8) {
             await interaction.editReply(
-                format(messages.commands.summaryTooManyFiles, {
-                    folderName: translatedName,
-                }),
+                `מצאתי ${matchingFiles.length} קבצים ב-${translatedName}. תצמצם עם contains, כי אני לא עושה dump רגשי כזה.`,
             );
             return;
         }
+
+        const intro = await formatResponse(interaction.user.id, {
+            normal: `הנה הסיכומים שמצאתי עבור ${translatedName}:`,
+            funny: `הנה הסיכומים של ${translatedName}. נס שאתה פותח אותם בכלל:`,
+            spicy: `מצאתי את זה עבור ${translatedName}. עכשיו נשאר הקטע הלא נעים של לקרוא:`,
+        });
 
         await interaction.editReply({
-            content: format(messages.commands.summaryHeader, {
-                folderName: translatedName,
-            }),
+            content: intro,
             files: matchingFiles.map((file) => file.path),
         });
     } catch (error: any) {
@@ -62,13 +56,11 @@ export default async function summary(
         if (error?.code === "ENOENT") {
             const option = interaction.options.getString("option", true);
             await interaction.editReply(
-                format(messages.commands.unknownFolder, {
-                    folderName: subjectTranslations[option] ?? option,
-                }),
+                `לא מצאתי תיקיית חומר עבור ${subjectTranslations[option] ?? option}. מצבך עדיין עדיף משלי.`,
             );
             return;
         }
 
-        await interaction.editReply(messages.errors.errorOccurred);
+        await interaction.editReply(await formatErrorResponse(interaction.user.id));
     }
 }
