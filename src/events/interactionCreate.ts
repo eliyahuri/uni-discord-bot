@@ -13,7 +13,7 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
             `Received interaction ${interaction.commandName} from ${interaction.user.tag}`,
         );
 
-        const handler = commandHandlers[interaction.commandName];
+        const handler = commandHandlers[interaction.commandName as keyof typeof commandHandlers];
         if (handler) {
             await handler(interaction);
         } else if (interaction.isRepliable()) {
@@ -21,7 +21,9 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
         }
     } catch (error) {
         logger.error(format(messages.errors.interactionError, { error }));
-        if (interaction.isRepliable() && !interaction.replied) {
+        if (interaction.isRepliable() && interaction.deferred) {
+            await interaction.editReply(messages.errors.errorOccurred);
+        } else if (interaction.isRepliable() && !interaction.replied) {
             await interaction.reply(messages.errors.errorOccurred);
         }
     }

@@ -28,7 +28,7 @@ client.on(
                 }
             }
         } catch (error) {
-            logger.error("Error in VoiceStateUpdate handler:", error);
+            logger.error(error, "Error in VoiceStateUpdate handler");
         }
     },
 );

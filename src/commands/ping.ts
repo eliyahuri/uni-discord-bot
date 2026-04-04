@@ -18,8 +18,12 @@ export default async function ping(
                     userId: interaction.user.id,
                 }),
             );
-            setTimeout(async () => {
-                await interaction.editReply(messages.commands.ping.reply);
+            setTimeout(() => {
+                void interaction.editReply(messages.commands.ping.reply).catch(
+                    (error) => {
+                        logger.error(error, "Error editing ping reply");
+                    },
+                );
             }, 3000);
         } else {
             await interaction.reply(messages.commands.ping.reply);

@@ -1,21 +1,25 @@
 import { ChatInputCommandInteraction } from "discord.js";
-
-const monkeyImages = [
-    "monkey1.jpg",
-    "monkey2.jpg",
-    "monkey3.jpg",
-    "monkey4.jpg",
-    "monkey5.jpg",
-    "monkey6.jpg",
-    "monkey7.jpg",
-    "monkey8.jpg",
-];
+import logger from "../utils/logger";
+import messages from "../utils/messages";
+import { getAssetFiles } from "../utils/assets";
 
 export default async function monkey(interaction: ChatInputCommandInteraction) {
-    const img = monkeyImages[Math.floor(Math.random() * monkeyImages.length)];
-    await interaction.reply({
-        files: [
-            require("path").join(__dirname, "../assets/monkeyImages/", img),
-        ],
-    });
+    try {
+        const requestedCount = interaction.options.getInteger("count") ?? 1;
+        const count = Math.min(Math.max(requestedCount, 1), 4);
+        const monkeyImages = await getAssetFiles("monkeyImages");
+
+        const selectedImages = [...monkeyImages]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, count)
+            .map((file) => file.path);
+
+        await interaction.reply({
+            content: messages.commands.monkey,
+            files: selectedImages,
+        });
+    } catch (error) {
+        logger.error(error, "Error in monkey command");
+        await interaction.reply(messages.errors.errorOccurred);
+    }
 }

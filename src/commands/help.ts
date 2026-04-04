@@ -13,10 +13,25 @@ export default async function help(
     interaction: ChatInputCommandInteraction,
 ): Promise<void> {
     try {
+        const isPrivate = interaction.options.getBoolean("private") ?? false;
         const helpText = commandsList
-            .map((c) => `/${c.name} - ${c.description}`)
+            .map((command) => {
+                const args =
+                    command.options
+                        ?.map((option) =>
+                            option.required
+                                ? `<${option.name}>`
+                                : `[${option.name}]`,
+                        )
+                        .join(" ") ?? "";
+
+                return `/${command.name}${args ? ` ${args}` : ""} - ${command.description}`;
+            })
             .join("\n");
-        await interaction.reply(format(messages.commands.help, { helpText }));
+        await interaction.reply({
+            content: format(messages.commands.help, { helpText }),
+            ephemeral: isPrivate,
+        });
     } catch (error) {
         logger.error(error, "Error in help command");
         await interaction.reply(messages.errors.errorOccurred);

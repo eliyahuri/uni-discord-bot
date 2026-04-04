@@ -1,4 +1,7 @@
-import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
+import {
+    ApplicationCommandOptionType,
+    type RESTPostAPIChatInputApplicationCommandsJSONBody,
+} from "discord.js";
 
 // Add explicit type annotations for Discord application commands
 export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
@@ -13,6 +16,14 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
     {
         name: "help",
         description: "מציג את רשימת הפקודות",
+        options: [
+            {
+                type: ApplicationCommandOptionType.Boolean,
+                name: "private",
+                description: "האם להציג את העזרה רק לך",
+                required: false,
+            },
+        ],
     },
     {
         name: "pizza",
@@ -33,6 +44,12 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
                     { name: "לוגיקה", value: "booleanAlgebra" },
                     { name: "ליניארית 1", value: "linear1" },
                 ],
+            },
+            {
+                type: ApplicationCommandOptionType.String,
+                name: "contains",
+                description: "סינון קבצים לפי שם",
+                required: false,
             },
         ],
     },
@@ -84,13 +101,13 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
                 required: true,
             },
             {
-                type: 10,
+                type: ApplicationCommandOptionType.Number,
                 name: "time",
                 description: "זמן של הסקר",
                 required: false,
             },
             {
-                type: 5,
+                type: ApplicationCommandOptionType.Boolean,
                 name: "multiselect",
                 description: "האם ניתן לבחור יותר מתשובה אחת",
                 required: false,
@@ -112,7 +129,7 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
         description: "מציג את מזג האוויר במקום מסוים",
         options: [
             {
-                type: 3,
+                type: ApplicationCommandOptionType.String,
                 name: "city",
                 description: "שם העיר",
                 required: true,
@@ -122,17 +139,115 @@ export const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [
     {
         name: "monkey",
         description: "מציג תמונה של קוף",
+        options: [
+            {
+                type: ApplicationCommandOptionType.Integer,
+                name: "count",
+                description: "כמה קופים לשלוח (1-4)",
+                required: false,
+            },
+        ],
     },
     {
         name: "roll",
         description: "מטיל קוביה",
         options: [
             {
-                type: 4,
+                type: ApplicationCommandOptionType.Integer,
                 name: "sides",
                 description: "מספר פאות (דיפולטיבי 6)",
                 required: false,
             },
+            {
+                type: ApplicationCommandOptionType.Integer,
+                name: "count",
+                description: "כמה הטלות לבצע",
+                required: false,
+            },
         ],
+    },
+    {
+        name: "userinfo",
+        description: "מציג מידע על משתמש",
+        options: [
+            {
+                type: ApplicationCommandOptionType.User,
+                name: "user",
+                description: "המשתמש שעליו להציג מידע",
+                required: false,
+            },
+        ],
+    },
+    {
+        name: "serverinfo",
+        description: "מציג מידע על השרת",
+    },
+    {
+        name: "avatar",
+        description: "מציג אווטאר של משתמש",
+        options: [
+            {
+                type: ApplicationCommandOptionType.User,
+                name: "user",
+                description: "המשתמש שעבורו יוצג האווטאר",
+                required: false,
+            },
+        ],
+    },
+    {
+        name: "echo",
+        description: "מחזיר את הטקסט ששלחת",
+        options: [
+            {
+                type: ApplicationCommandOptionType.String,
+                name: "text",
+                description: "הטקסט שברצונך שאחזיר",
+                required: true,
+            },
+            {
+                type: ApplicationCommandOptionType.Boolean,
+                name: "private",
+                description: "האם להחזיר רק לך",
+                required: false,
+            },
+        ],
+    },
+    {
+        name: "choose",
+        description: "בוחר אופציה אקראית מתוך רשימה",
+        options: [
+            {
+                type: ApplicationCommandOptionType.String,
+                name: "options",
+                description: "אפשרויות מופרדות בפסיקים",
+                required: true,
+            },
+        ],
+    },
+    {
+        name: "coinflip",
+        description: "מטיל מטבע",
+    },
+    {
+        name: "random",
+        description: "מגריל מספר בטווח שתבחר",
+        options: [
+            {
+                type: ApplicationCommandOptionType.Integer,
+                name: "min",
+                description: "המספר המינימלי",
+                required: true,
+            },
+            {
+                type: ApplicationCommandOptionType.Integer,
+                name: "max",
+                description: "המספר המקסימלי",
+                required: true,
+            },
+        ],
+    },
+    {
+        name: "uptime",
+        description: "מציג כמה זמן הבוט פעיל",
     },
 ];

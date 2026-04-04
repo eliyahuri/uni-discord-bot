@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
+import messages from "../utils/messages";
 
 export default async function noam(interaction: ChatInputCommandInteraction) {
-    await interaction.reply("<@YOUR_NOAM_ID> נועםםםםםםםםםםםםםםםם!");
+    await interaction.reply(messages.commands.noam);
 }

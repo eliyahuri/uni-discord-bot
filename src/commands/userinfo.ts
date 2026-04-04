@@ -12,7 +12,7 @@ export default async function userinfo(
     interaction: ChatInputCommandInteraction,
 ): Promise<void> {
     try {
-        const user = interaction.options.getUser("user", true);
+        const user = interaction.options.getUser("user") ?? interaction.user;
         const member = interaction.guild?.members.cache.get(user.id);
         const joined = member?.joinedAt?.toLocaleDateString() || "Unknown";
         const created = user.createdAt.toLocaleDateString();

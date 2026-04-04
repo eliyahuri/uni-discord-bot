@@ -7,6 +7,13 @@ import ping from "./ping";
 import representatives from "./representatives";
 import help from "./help";
 import userinfo from "./userinfo";
+import serverinfo from "./serverinfo";
+import avatar from "./avatar";
+import echo from "./echo";
+import choose from "./choose";
+import coinflip from "./coinflip";
+import random from "./random";
+import uptime from "./uptime";
 import tal from "./tal";
 import pizza from "./pizza";
 import summary from "./summary";
@@ -32,6 +39,13 @@ export const commandHandlers: Record<CommandName, CommandHandler> = {
     representatives,
     help,
     userinfo,
+    serverinfo,
+    avatar,
+    echo,
+    choose,
+    coinflip,
+    random,
+    uptime,
     tal,
     pizza,
     summary,
